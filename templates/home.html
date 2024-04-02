@@ -12,8 +12,8 @@
 </form>
 
 {% else %}
-<p>You are not logged in</p>
-<a href="{% url 'login' %}">Log In</a>
-<a href="{% url 'signup' %}">Sign Up</a>
+<p>You are currenlty not logged in. To access full feature you can <a href="{% url 'login' %}">Log In</a>.
+    <a href="{% url 'signup' %}">Don't have account?</a>
+</p>
 {% endif %}
 {% endblock %}
