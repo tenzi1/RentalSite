@@ -45,3 +45,10 @@ def update_profile(request):
         else:
             form = CreateUserProfileForm(instance=request.user.profile)
             return render(request, "registration/user_profile.html", {"form": form})
+
+
+def confirm_logout(request):
+    """
+    Returns template with logout form.
+    """
+    return render(request, "registration/logout.html")
