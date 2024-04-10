@@ -7,7 +7,7 @@ Confirm logout
 {% block content %}
 <h1>Confirm Logout</h1>
 <p>Are you sure you want to log out?</p>
-<form action="{% url 'logout' %}" method="post">
+<form action="{% url 'account_logout' %}" method="post">
     {% csrf_token %}
     <div class="row">
         <div class="col">
