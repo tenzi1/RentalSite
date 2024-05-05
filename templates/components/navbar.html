@@ -1,0 +1,64 @@
+{% block navbar %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<nav class="nav">
+  <a href="{% url 'home' %}" class="brand-name">Easy Rental</a>
+  <div class="dropdown">
+
+    <button class="dropbtn" onclick="showCategories()">Categories
+      <i class="fa fa-caret-down"></i>
+      <i class="fa fa-caret-up" style="display: none;"></i>
+    </button>
+    <div class="dropdown-content" id="category-dropdown">
+      <a href="#">Link 1</a>
+      <a href="#">Link 2</a>
+      <a href="#">Link 3</a>
+    </div>
+  </div>
+  <div class="search-container">
+    <!-- <div></div> -->
+    <form action="" method="get" class="form-flex">
+      <input type="text" placeholder="Search for room..." name="search" class="search-input">
+      <i class="fa fa-search search-icon"></i>
+    </form>
+    <!-- <div></div> -->
+  </div>
+  <!-- <input type="search" class="search" placeholder="Search for Room"> -->
+  {% if user.is_authenticated %}
+  <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+  <a href="{% url 'account_logout' %}" class="nav-link">Log Out</a>
+  {% else %}
+  <a href="{% url 'account_login' %}" class="nav-link">
+    <i class="fa fa-user"></i> Login
+  </a>
+  <div class="login-signup-divider"></div>
+  <a href="{% url 'account_signup' %}" class="nav-link">Sign Up</a>
+  {% endif %}
+  <!-- <i class="fa fa-cart"></i> -->
+
+</nav>
+
+<!-- <div class="left-section">
+    <a href="#" class="brand-name nav-link">Easy Rental</a>
+    <input type="search" placeholder="search..." class="search"> -->
+<!-- <a href="{% url 'home' %}" class="nav-link">Home</a>
+    <a href="#contact" class="nav-link">Contact</a>
+    <a href="#about" class="nav-link">About</a> -->
+<!-- </div> -->
+<!-- <div class="right-section">
+    <a href="" class="nav-link">test</a>
+    {% if user.is_authenticated %}
+    <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+    {% else %}
+    <a class="nav-link" href="{% url 'account_login' %}">Log In</a>
+    <a class="nav-link" href="{% url 'account_signup' %}">Sign Up</a>
+    {% endif %}
+  </div>
+  <div class="hamburger" onclick="toggleMenu()">
+    <span class="line"></span>
+    <span class="line"></span>
+    <span class="line"></span>
+  </div>
+</nav> -->
+
+{% endblock navbar %}
