@@ -1,0 +1,177 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f4f4f4;
+}
+
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.body-container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar,
+.main {
+    flex: 1 auto;
+    /* padding: 2rem 3rem; */
+    overflow-y: scroll;
+}
+
+.sidebar {
+    /* background-color: navy; */
+    /* border-right: 1px solid grey; */
+    max-width: 30%;
+    min-width: 30%;
+    background-color: white;
+    scrollbar-width: none;
+    box-shadow: 2px 0 2px -2px rgb(70, 69, 69);
+    /* margin-right: 4px; */
+
+}
+
+
+.category-body ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.category-body ul li {
+    box-shadow: 0px 2px 2px -2px;
+    padding-left: 26px;
+    margin: 5px 0;
+}
+
+.category-body ul li:hover {
+
+    background-color: rgba(215, 230, 240, 0.664);
+
+}
+
+.category-header,
+.main-header {
+    box-shadow: 0px 2px 2px -2px;
+    background-color: white;
+}
+
+.category-header {
+    padding: 10px;
+}
+
+.header-text {
+    font-size: 1.05rem;
+}
+
+.main {
+    /* border: 1px solid red; */
+    margin-left: 1px;
+    background-color: white;
+    min-width: 65%;
+    /* padding-left: 20px; */
+    /* box-shadow: -2px 0 5px rgb(27, 26, 26); */
+}
+
+.main-header {
+    display: flex;
+}
+
+.first,
+.second {
+    padding: 10px 15px;
+}
+
+.divider {
+    width: 2px;
+    height: 14px;
+    background-color: grey;
+    transform: translateY(110%);
+    margin: 0 5px;
+}
+
+/* .active {
+    background-color: rgb(28, 148, 228);
+    color: white;
+} */
+
+.active,
+.first:hover,
+.second:hover {
+    /* background-color: blue; */
+    /* border-bottom: 2px solid black; */
+    border-bottom: 3px solid rgb(28, 148, 228);
+}
+
+.main-body {
+    padding: 10px 15px;
+}
+
+.rental-card {
+    display: flex;
+    /* flex-direction: column; */
+    /* align-items: center; */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    padding: 10px;
+    margin-bottom: 15px;
+    /* width: 300px; */
+    /* Adjust based on your design */
+}
+
+.main-image {
+    width: 100%;
+    height: auto;
+    /* border: 1px solid black; */
+}
+
+.main-image img {
+    border: 1px solid #ccc;
+}
+
+.rental-img {
+    border-radius: 5px;
+    object-fit: contain;
+}
+
+.description-section {}
+
+.thumbnails {
+    /* border: 1px solid grey; */
+    padding: 10px;
+}
+
+.thumbnails img {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+.thumbnails img {
+    width: 50px;
+    height: auto;
+    cursor: pointer;
+}
+
+.rental-card:hover {
+    border: 1px solid rgb(28, 148, 228);
+    background-color: rgba(215, 230, 240, 0.664);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 600px) {
+    .rental-card {
+        flex-direction: column;
+    }
+
+    .main-image,
+    .description-section,
+    .thumbnails {
+        width: 100%;
+    }
+}
