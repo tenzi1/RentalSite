@@ -1,20 +1,27 @@
-{% extends '_base.html' %}
-
-{% block title %}
-Confirm logout
-{% endblock %}
-
+{% extends "account/base_manage.html" %}
+{% load allauth i18n %}
+{% block head_title %}
+    {% trans "Sign Out" %}
+{% endblock head_title %}
 {% block content %}
-<h1>Confirm Logout</h1>
-<p>Are you sure you want to log out?</p>
-<form action="{% url 'account_logout' %}" method="post">
-    {% csrf_token %}
-    <div class="row">
-        <div class="col">
-            <button type="submit" class="btn btn-danger mr-2">Logout</button>
-            <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
-        </div>
-    </div>
-</form>
-
-{% endblock %}
+    {% element h1 %}
+        {% trans "Sign Out" %}
+    {% endelement %}
+    <p>{% trans 'Are you sure you want to sign out?' %}</p>
+    {% url 'account_logout' as action_url %}
+    {% element form method="post" action=action_url no_visible_fields=True %}
+        {% slot body %}
+            {% csrf_token %}
+            {% if redirect_field_value %}
+                <input type="hidden"
+                       name="{{ redirect_field_name }}"
+                       value="{{ redirect_field_value }}" />
+            {% endif %}
+        {% endslot %}
+        {% slot actions %}
+            {% element button type="submit" %}
+                {% trans 'Sign Out' %}
+            {% endelement %}
+        {% endslot %}
+    {% endelement %}
+{% endblock content %}

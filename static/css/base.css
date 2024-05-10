@@ -1,210 +1,177 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    box-sizing: border-box;
     background-color: #f4f4f4;
 }
 
-.container {
-    margin: auto;
-    /* overflow: hidden; */
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
 }
 
-.nav {
+.body-container {
     display: flex;
-    justify-content: center;
-    align-items: baseline;
-    background-color: rgb(28, 148, 228);
-    padding-top: 12px;
-    width: 100%;
-    /* overflow: hidden; */
-    /* position: relative; */
-    position: sticky;
+    height: 100vh;
+}
+
+.sidebar,
+.main {
+    flex: 1 auto;
+    /* padding: 2rem 3rem; */
+    overflow-y: scroll;
+}
+
+.sidebar {
+    /* background-color: navy; */
+    /* border-right: 1px solid grey; */
+    max-width: 30%;
+    min-width: 30%;
+    background-color: white;
+    scrollbar-width: none;
+    box-shadow: 2px 0 2px -2px rgb(70, 69, 69);
+    /* margin-right: 4px; */
 
 }
 
-.nav> :not(:last-child) {
-    margin-right: 10px;
+
+.category-body ul {
+    list-style-type: none;
+    padding: 0;
 }
 
-.nav-link {
-    padding: 10px 10px;
-    color: white;
-    text-decoration: none;
+.category-body ul li {
+    box-shadow: 0px 2px 2px -2px;
+    padding-left: 26px;
+    margin: 5px 0;
 }
 
-.nav-link:hover {
-    background-color: rgba(28, 148, 228, 0.842);
-}
+.category-body ul li:hover {
 
-
-/* For category dropdown */
-.dropdown {
-    /* float: left; */
-    /* position: relative; */
-    /* overflow: hidden; */
-}
-
-
-.dropdown .dropbtn {
-    cursor: pointer;
-    font-size: 16px;
-    border: none;
-    outline: none;
-    color: white;
-    padding: 10px 10px;
-    background-color: inherit;
-    font-family: inherit;
-    margin: 0;
-}
-
-.nav a:hover,
-.dropdown:hover .dropbtn,
-.dropbtn:focus {
-    background-color: rgba(67, 149, 204, 0.842);
-    color: #fff;
-    border-radius: 15px;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    top: 100%;
-    /* transform: translateX(-140px); */
-    /* left: 18%; */
-}
-
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
-}
-
-.dropdown-content a:hover {
-    background-color: #ddd;
-}
-
-.show {
-    display: block;
-}
-
-.search-container {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 40%;
+    background-color: rgba(215, 230, 240, 0.664);
 
 }
 
-.form-flex {
-    width: 100%;
-}
-
-.search-input {
-    padding: 10px 30px 10px 10px;
-    border: none;
-    border-radius: 15px;
-    outline: none;
-    font-size: 16px;
-    width: 100%;
-
-}
-
-.search-icon {
-    position: absolute;
-    right: 5px;
-    top: 10px;
-    transform: translate(-50%);
-    color: rgb(28, 148, 228);
-}
-
-.login-signup-divider {
-    position: relative;
-    display: inline-block;
-    height: 10px;
-    margin: 0;
-}
-
-.login-signup-divider::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 1px;
-    height: 14px;
-    background-color: #ccc;
-}
-
-
-.hamburger {
-    display: none;
-    flex-direction: column;
-    justify-content: space-around;
-    width: 2rem;
-    height: 2rem;
-    cursor: pointer;
-}
-
-.hamburger .line {
-    width: 2rem;
-    height: 0.25rem;
+.category-header,
+.main-header {
+    box-shadow: 0px 2px 2px -2px;
     background-color: white;
 }
 
-
-.nav-link:hover {
-    color: #ddd;
+.category-header {
+    padding: 10px;
 }
 
-.brand-name {
-    font-size: 1.5em;
+.header-text {
+    font-size: 1.05rem;
+}
+
+.main {
+    /* border: 1px solid red; */
+    margin-left: 1px;
+    background-color: white;
+    min-width: 65%;
+    /* padding-left: 20px; */
+    /* box-shadow: -2px 0 5px rgb(27, 26, 26); */
+}
+
+.main-header {
+    display: flex;
+}
+
+.first,
+.second {
+    padding: 10px 15px;
+}
+
+.divider {
+    width: 2px;
+    height: 14px;
+    background-color: grey;
+    transform: translateY(110%);
+    margin: 0 5px;
+}
+
+/* .active {
+    background-color: rgb(28, 148, 228);
     color: white;
-    text-decoration: none;
+} */
+
+.active,
+.first:hover,
+.second:hover {
+    /* background-color: blue; */
+    /* border-bottom: 2px solid black; */
+    border-bottom: 3px solid rgb(28, 148, 228);
 }
 
-/* Tablet Layout
-@media (min-width: 768px) {
-
-    .left-section,
-    .right-section {
-        flex-direction: row;
-    }
+.main-body {
+    padding: 10px 15px;
 }
 
-/* Mobile Layout */
-/* @media (max-width: 600px) {
-    .nav { */
-/* flex-direction: column; */
-/* justify-content: ; */
-/* }
+.rental-card {
+    display: flex;
+    /* flex-direction: column; */
+    /* align-items: center; */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    padding: 10px;
+    margin-bottom: 15px;
+    /* width: 300px; */
+    /* Adjust based on your design */
+}
 
-    .left-section,
-    .right-section {
-        display: None; */
-/* flex-direction: column;
-        flex-wrap: wrap;
-        margin: auto; */
-/* } */
+.main-image {
+    width: 100%;
+    height: auto;
+    /* border: 1px solid black; */
+}
 
-/* .hamburger {
-        display: flex;
-    }
+.main-image img {
+    border: 1px solid #ccc;
+}
 
-    .responsive-dropdown {
-        display: flex;
+.rental-img {
+    border-radius: 5px;
+    object-fit: contain;
+}
+
+.description-section {}
+
+.thumbnails {
+    /* border: 1px solid grey; */
+    padding: 10px;
+}
+
+.thumbnails img {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+.thumbnails img {
+    width: 50px;
+    height: auto;
+    cursor: pointer;
+}
+
+.rental-card:hover {
+    border: 1px solid rgb(28, 148, 228);
+    background-color: rgba(215, 230, 240, 0.664);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 600px) {
+    .rental-card {
         flex-direction: column;
-        align-items: start;
-        flex-wrap: wrap; */
-/* margin: auto; */
-/* } */
+    }
 
-
-/* } */
+    .main-image,
+    .description-section,
+    .thumbnails {
+        width: 100%;
+    }
+}

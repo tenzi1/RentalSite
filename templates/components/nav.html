@@ -1,0 +1,47 @@
+{% load static %}
+{% block nav%}
+<link rel="stylesheet" href="{% static 'css/nav.css' %}">
+
+<header class="header sticky-top ">
+    <div class="container">
+        <nav class="nav navbar">
+            <a href="{% url 'home' %}" class="brand-name">Easy Rental</a>
+            <div id="categories-placeholder"></div>
+
+            <!-- <div class="dropdown" style="display: none;">
+
+                <button class="dropbtn" onclick="showCategories()">Categories
+                    <i class="fa fa-caret-down"></i>
+                    <i class="fa fa-caret-up" style="display: none;"></i>
+                </button>
+                <div class="dropdown-content" id="category-dropdown">
+                    <a href="#">Link 1</a>
+
+
+                    <a href="#">Link 2</a>
+                    <a href="#">Link 3</a>
+                </div>
+            </div> -->
+            <div class="search-container">
+                <!-- <div></div> -->
+                <form action="" method="get" class="form-flex">
+                    <input type="text" placeholder="Search for room..." name="search" class="search-input">
+                    <i class="fa fa-search search-icon"></i>
+                </form>
+                <!-- <div></div> -->
+            </div>
+            <a href="#" class="nav-link"><i class="fa fa-plus-square" aria-hidden="true"></i> Add Rental</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+            <a href="{% url 'account_logout' %}" class="nav-link">Log Out</a>
+            {% else %}
+            <a href="{% url 'account_login' %}" class="nav-link">
+                <i class="fa fa-user"></i> Login
+            </a>
+            <div class="login-signup-divider"></div>
+            <a href="{% url 'account_signup' %}" class="nav-link">Sign Up</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+{% endblock nav%}

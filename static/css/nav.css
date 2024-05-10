@@ -1,0 +1,148 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* font-family: Arial, sans-serif; */
+    background-color: #f4f4f4;
+}
+
+.header {
+    background-color: rgb(28, 148, 228) !important;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.nav-link {
+    padding: 10px 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.nav> :not(:last-child) {
+    margin-right: 10px;
+}
+
+.nav-link:hover {
+    color: white;
+    background-color: rgba(24, 101, 153, 0.664);
+    outline: none;
+    border-radius: 5px;
+
+}
+
+.brand-name {
+    color: white;
+    text-decoration: none;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-right: 15px;
+}
+
+.search-container {
+    flex: 1;
+    padding: auto;
+}
+
+.form-flex>.search-input {
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    width: 100%;
+    padding: 8px 16px;
+}
+
+.form-flex {
+    position: relative;
+    text-align: center;
+    margin: auto;
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(28, 148, 228);
+    background-color: rgba(215, 230, 240, 0.664);
+    padding: 8px;
+    outline: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-icon:hover {
+    background-color: rgb(28, 148, 228);
+    color: white;
+}
+
+.login-signup-divider {
+    position: relative;
+    display: inline-block;
+    height: 10px;
+    margin: 0;
+}
+
+.login-signup-divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1px;
+    height: 14px;
+    background-color: #ccc;
+}
+
+/* 
+.dropdown .dropbtn {
+    cursor: pointer;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 10px 10px;
+    background-color: inherit;
+    font-family: inherit;
+    margin: 0;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: rgba(24, 101, 153, 0.664);
+    color: #fff;
+    border-radius: 5px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #F8F9FA;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    top: 115%;
+    transform: translateX(-128px);
+    border-bottom-left-radius: 5px;
+}
+
+.dropdown-content a {
+    font-size: 14px;
+    color: grey;
+    padding: 3px 15px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #f4f4f4;
+    color: rgb(28, 148, 228);
+}
+
+.show {
+    display: block;
+} */

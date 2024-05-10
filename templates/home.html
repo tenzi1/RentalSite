@@ -1,5 +1,5 @@
 {% extends '_base.html' %}
-
+{% load static %}
 {% block title%} Home {% endblock %}
 
 {% block content %}
@@ -12,19 +12,301 @@
 
 {% endfor %}
 {% endif %}
+<div class="container body-container">
+    <aside class="sidebar">
+        <div class="category-header sticky-top">
+            <i class="fa fa-th-large" aria-hidden="true">
+            </i>
+            <span class="header-text">Category
+            </span>
+        </div>
+        <div class="category-body">
+            <ul>
+                <li>Nav item 2</li>
+                <li>Nav item 3</li>
+                <li>Nav item 4</li>
+                <li>Nav item 5</li>
+                <li>Nav item 6</li>
+                <li>Nav item 7</li>
+                <li>Nav item 8</li>
+                <li>Nav item 9</li>
+                <li>Nav item 10</li>
+                <li>Nav item 11</li>
+                <li>Nav item 12</li>
+                <li>Nav item 13</li>
+                <li>Nav item 14</li>
+                <li>Nav item 15</li>
+                <li>Nav item 16</li>
+                <li>Nav item 17</li>
+                <li>Nav item 18</li>
+                <li>Nav item 19</li>
+                <li>Nav item 20</li>
+                <li>Nav item 21</li>
+                <li>Nav item 22</li>
+                <li>Nav item 23</li>
+                <li>Nav item 24</li>
+                <li>Nav item 25</li>
+                <li>Nav item 26</li>
+                <li>Nav item 27</li>
+                <li>Nav item 28</li>
+                <li>Nav item 29</li>
+                <li>Nav item 30</li>
+                <li>Nav item 31</li>
+                <li>Nav item 32</li>
+                <li>Nav item 33</li>
+                <li>Nav item 34</li>
+                <li>Nav item 35</li>
+                <li>Nav item 36</li>
+                <li>Nav item 37</li>
+                <li>Nav item 38</li>
+                <li>Nav item 39</li>
+                <li>Nav item 40</li>
+                <li>Nav item 41</li>
+                <li>Nav item 42</li>
+                <li>Nav item 43</li>
+                <li>Nav item 44</li>
+                <li>Nav item 45</li>
+                <li>Nav item 46</li>
+                <li>Nav item 47</li>
+                <li>Nav item 48</li>
+                <li>Nav item 49</li>
+                <li>Nav item 50</li>
+                <li>Nav item 51</li>
+                <li>Nav item 52</li>
+                <li>Nav item 53</li>
+                <li>Nav item 54</li>
+                <li>Nav item 55</li>
+                <li>Nav item 56</li>
+                <li>Nav item 57</li>
+                <li>Nav item 58</li>
+                <li>Nav item 59</li>
+                <li>Nav item 60</li>
+                <li>Nav item 61</li>
+                <li>Nav item 62</li>
+                <li>Nav item 63</li>
+                <li>Nav item 64</li>
+                <li>Nav item 65</li>
+                <li>Nav item 66</li>
+                <li>Nav item 67</li>
+                <li>Nav item 68</li>
+                <li>Nav item 69</li>
+                <li>Nav item 70</li>
+                <li>Nav item 71</li>
+                <li>Nav item 72</li>
+                <li>Nav item 73</li>
+                <li>Nav item 74</li>
+                <li>Nav item 75</li>
+                <li>Nav item 76</li>
+                <li>Nav item 77</li>
+                <li>Nav item 78</li>
+            </ul>
+        </div>
+
+    </aside>
+    <main class="main">
+        <div class="main-header sticky-top">
+            <div class="first active">
+                <i class="fa fa-cubes" aria-hidden="true"></i>
+                <span class="header-text">Featured Rentals</span>
+            </div>
+            <span class="divider"></span>
+            <div class="second">
+                <i class="fa fa-bolt" aria-hidden="true"></i>
+                <span class="header-text">Latest Rentals</span>
+
+            </div>
+        </div>
+
+        <div class="main-body">
+
+            <div class="rental-card">
+                <div class="main-image">
+                    <img class='rental-img' src="{% get_media_prefix %}rental/apartment.jpeg" alt="Main Rental Image">
+                    <div class="thumbnails">
+                        <img src="{% get_media_prefix %}rental/apartment.jpeg" alt="Thumbnail 1">
+                        <img src="{% get_media_prefix %}rental/apartment.jpeg" alt="Thumbnail 2">
+                        <!-- Add more thumbnails as needed -->
+                    </div>
+                </div>
+                <div class="description-section">
+                    <h3>Rental Title</h3>
+                    <p>Description of the rental property. This is a great place to include details about the property,
+                        such as its
+                        location, amenities, and any unique features it might have.</p>
+                </div>
+            </div>
+
+            <div class="rental-card">
+                <div class="main-image">
+                    <img class='rental-img' src="{% get_media_prefix %}rental/apartment.jpeg" alt="Main Rental Image">
+                    <div class="thumbnails">
+                        <img src="{% get_media_prefix %}rental/apartment.jpeg" alt="Thumbnail 1">
+                        <img src="{% get_media_prefix %}rental/apartment.jpeg" alt="Thumbnail 2">
+                        <!-- Add more thumbnails as needed -->
+                    </div>
+                </div>
+                <div class="description-section">
+                    <h3>Rental Title</h3>
+                    <p>Description of the rental property. This is a great place to include details about the property,
+                        such as its
+                        location, amenities, and any unique features it might have.</p>
+                </div>
+            </div>
+
+            <div class="rental-card">
+                <div class="main-image">
+                    <img class='rental-img' src="{% get_media_prefix %}rental/apartment.jpeg" alt="Main Rental Image">
+                    <div class="thumbnails">
+                        <img src="{% get_media_prefix %}rental/apartment.jpeg" alt="Thumbnail 1">
+                        <img src="{% get_media_prefix %}rental/apartment.jpeg" alt="Thumbnail 2">
+                        <!-- Add more thumbnails as needed -->
+                    </div>
+                </div>
+                <div class="description-section">
+                    <h3>Rental Title</h3>
+                    <p>Description of the rental property. This is a great place to include details about the property,
+                        such as its
+                        location, amenities, and any unique features it might have.</p>
+                </div>
+            </div>
 
 
-<h1>This is homepage..</h1>
-{% if user.is_authenticated %}
-<p>Hi {{user.email}}</p>
-<form action="{% url 'account_logout' %}" method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-warning">Log Out</button>
-</form>
 
-{% else %}
-<p>You are currenlty not logged in. To access full feature you can <a href="{% url 'account_login' %}">Log In</a>.
-    <a href="{% url 'signup' %}">Don't have account?</a>
-</p>
-{% endif %}
+        </div>
+
+
+    </main>
+
+
+
+    <!-- <div class="wrapper">
+        <div class="first">
+
+            <div class="category-wrapper">
+                <div class="category-header">
+                    
+                </div>
+                <div class="category-body">
+                    <ul>
+                        <li>
+                            <a href="#">Category 1 this is new category..... Lorem ipsum dolor sit amet consectetur,
+                                adipisicing elit. Provident, eius?
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">Category 1</a>
+                        </li>
+                        <li>
+                            <a href="#">Category 1</a>
+                        </li>
+                        <li>
+                            <a href="#">Category 1</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="second">
+            <div class="main-wrapper">
+                <div class="rental-header">
+                    <span class="header-text active-rental">Featured Rentals</span>
+                    <span class="header-text">Latest Rentals</span>
+                </div>
+                <div class="rental-body">
+                    <div class="card">
+                        <div class="image-wrapper">
+
+                            <img src="" alt="" style="width: 300; height: 300;">
+                        </div>
+                        <div class="card-description">
+                            <h4>Card Title</h4>
+                            <h5>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore repudiandae sint
+                                assumenda neque aspernatur! Odio!</h5>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="image-wrapper">
+
+                            <img src="" alt="" style="width: 300; height: 300;">
+                        </div>
+                        <div class="card-description">
+                            <h4>Card Title</h4>
+                            <h5>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore repudiandae sint
+                                assumenda neque aspernatur! Odio!</h5>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="image-wrapper">
+
+                            <img src="" alt="" style="width: 300; height: 300;">
+                        </div>
+                        <div class="card-description">
+                            <h4>Card Title</h4>
+                            <h5>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore repudiandae sint
+                                assumenda neque aspernatur! Odio!</h5>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div> -->
+    <!-- <div class="category-container">
+        <section class="categories" id="categories-section">
+            <div class="category-header">
+                <h3>Categories</h3>
+            </div>
+            <ul>
+                <li><a href="#">Category 1</a></li>
+                <li><a href="#">Category 2</a></li>
+                <li><a href="#">Category 3</a></li>
+            </ul>
+        </section>
+    </div> -->
+    <!-- <div class="main-container">
+
+        <main class="main">
+            <section class="featured-rentals">
+                <h2>Featured Rentals</h2>
+                <div class="featured-container">
+                    <div class="card" style="width: 18rem;">
+                        <img src="{% get_media_prefix %}rental/apartment.jpeg" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the
+                                bulk
+                                of
+                                the
+                                card's
+                                content.</p>
+                            <a href="#" class="btn btn-primary">Rent It</a>
+                        </div>
+                    </div>
+
+                    <div class="card" style="width: 18rem;">
+                        <img src="{% get_media_prefix %}rental/apartment.jpeg" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the
+                                bulk
+                                of
+                                the
+                                card's
+                                content.</p>
+                            <a href="#" class="btn btn-primary">Rent It</a>
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </section> -->
+    <!-- <section class="cta">
+            <h2>Book Your Rental Today!</h2>
+            <a href="#" class="cta-button">Book Now</a>
+        </section> -->
+    <!-- </main> -->
+    <!-- </div> -->
+
+</div>
+
 {% endblock %}

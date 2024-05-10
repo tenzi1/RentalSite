@@ -15,6 +15,8 @@ User Profile
                 {% csrf_token %}
                 {{ form|crispy }}
                 <button class="btn btn-info">Update Profile</button>
+                <a href="{% url 'account_change_password' %}" class="btn">Change Password</a>
+                <a href="{% url 'account_email' %}" class="btn">Change Email</a>
             </form>
         </div>
     </div>

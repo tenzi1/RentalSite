@@ -154,7 +154,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Media file settings
 MEDIA_URL = "/media/"
-
+MEDIA_ROOT = BASE_DIR / "upload"
 # CRISPY FORM SETTINGS
 CRISPY_ALLOWED_TEMPLATE_PACK = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
