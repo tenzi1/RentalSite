@@ -49,10 +49,12 @@ INSTALLED_APPS = [
     "users",
     "rentals",
     # third party
-    "crispy_forms",
-    "crispy_bootstrap5",
     "allauth",
     "allauth.account",
+    "crispy_forms",
+    "crispy_bootstrap5",
+    "rest_framework",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -172,3 +174,19 @@ ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_UNIQUE_EMAIL = True
+
+
+# RESTFRAMEWORK settings
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Easy Rental Site API",
+    "DESCRIPTION": "Easy Rental is one stop rental site for both owner and renter.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
+}
