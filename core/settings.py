@@ -51,7 +51,9 @@ INSTALLED_APPS = [
     # third party
     "allauth",
     "allauth.account",
+    "django_filters",
     "crispy_forms",
+    "crispy_bootstrap4",
     "crispy_bootstrap5",
     "rest_framework",
     "drf_spectacular",
@@ -158,8 +160,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "upload"
 # CRISPY FORM SETTINGS
-CRISPY_ALLOWED_TEMPLATE_PACK = "bootstrap5"
-CRISPY_TEMPLATE_PACK = "bootstrap5"
+CRISPY_ALLOWED_TEMPLATE_PACK = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # Django allauth settings
 LOGIN_REDIRECT_URL = "home"

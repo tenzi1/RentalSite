@@ -145,6 +145,7 @@ class Rental(IsDeleted):
         help_text="Rent Start Date", null=True, blank=True
     )
     rent_end_date = models.DateField(help_text="Rent End Date", null=True, blank=True)
+    is_featured = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
