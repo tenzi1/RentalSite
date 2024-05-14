@@ -82,28 +82,44 @@ function toggleMenu() {
 
 
 // // toggle active class
-// const firstElement = document.querySelector('.first');
-// const secondElement = document.querySelector('.second');
+const firstElement = document.querySelector('.first');
+const secondElement = document.querySelector('.second');
 
-// function toggleActiveClass() {
-//     firstElement.classList.remove('active');
-//     secondElement.classList.remove('active');
+function toggleActiveClass() {
+    firstElement.classList.remove('active');
+    secondElement.classList.remove('active');
+    if (this == firstElement) {
+        firstElement.classList.add('active');
+    } else {
+        secondElement.classList.add('active')
+    }
+}
 
-//     if (this == firstElement) {
-//         firstElement.classList.add('active');
-//     } else {
-//         secondElement.classList.add('active')
-//     }
-// }
+firstElement.addEventListener('click', toggleActiveClass);
+secondElement.addEventListener('click', toggleActiveClass);
 
-// firstElement.addEventListener('click', toggleActiveClass);
-// secondElement.addEventListener('click', toggleActiveClass);
-
-$(document).ready(function () {
-    $('.first,.second').on('click', function () {
-        $('.first,.second').removeClass('active');
-        $(this).addClass('active');
-    });
-})
+// $(document).ready(function () {
+//     $('.first,.second').on('click', function () {
+//         $('.first,.second').removeClass('active');
+//         $(this).addClass('active');
+//     });
+// })
 
 console.log('herererer')
+
+// Fetch category list
+function fetchCategoris() {
+    fetch('/api/v1/category/')
+        .then(response => response.json())
+        .then(categories => {
+            const ul = document.getElementById('categories-list');
+            categories['results'].forEach(category => {
+                const li = document.createElement('li');
+                li.textContent = category.name;
+                ul.appendChild(li);
+            });
+        })
+        .catch(error => console.log('Error', error))
+}
+
+fetchCategoris()

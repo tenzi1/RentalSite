@@ -1,16 +1,18 @@
+html,
 body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     background-color: #f4f4f4;
-}
-
-
-html,
-body {
     height: 100%;
     overflow: hidden;
 }
+
+
+/* html,
+body {
+    
+} */
 
 .body-container {
     display: flex;
@@ -39,6 +41,7 @@ body {
 
 .category-body ul {
     list-style-type: none;
+    margin: 0;
     padding: 0;
 }
 
