@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv(".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,8 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", False)
-
+DEBUG = os.environ.get("DEBUG", False) == "True"
 
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS").split(",")]
 
@@ -57,6 +56,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "rest_framework",
     "drf_spectacular",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -65,6 +65,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -158,7 +159,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Media file settings
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "upload"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # CRISPY FORM SETTINGS
 CRISPY_ALLOWED_TEMPLATE_PACK = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
@@ -192,3 +193,40 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     # OTHER SETTINGS
 }
+
+
+# DEBUG_TOOLBAR
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+
+if DEBUG:
+
+    LOGGING = {
+        # Use v1 of the logging config schema
+        "version": 1,
+        # Continue to use existing loggers
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+                "style": "{",
+            },
+        },
+        # Create a log handler that prints logs to the terminal
+        "handlers": {
+            "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
+        },
+        # Define the root logger's settings
+        "root": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+        "loggers": {
+            "django.db.backends": {
+                "level": "DEBUG",
+            },
+        },
+    }

@@ -32,6 +32,7 @@ urlpatterns = [
         "docs/",
         SpectacularSwaggerView.as_view(),
     ),
+    path("__debug__/", include("debug_toolbar.urls")),
     # path("accounts/", include("django.contrib.auth.urls")),
     path("api/v1/", include("api.urls.user_urls")),
     path("api/v1/", include("api.urls.rental_urls")),
