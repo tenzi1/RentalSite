@@ -18,20 +18,48 @@ class CreateRentalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rental
-        exclude = ["owner", "date_added", "date_modified", "is_deleted"]
+        exclude = [
+            "owner",
+            "date_added",
+            "date_modified",
+            "is_deleted",
+        ]
 
 
 class ListRentalSerializer(serializers.ModelSerializer):
     """Serializer for listing Rental instances."""
 
-    owner = serializers.SerializerMethodField()
+    address = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+    category_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Rental
-        fields = ("id", "title", "owner", "monthly_cost")
+        fields = (
+            "id",
+            "title",
+            "monthly_rent",
+            "description",
+            "address",
+            "category_name",
+            "images",
+        )
+        depth = 1
 
-    def get_owner(self, object):
-        return object.owner.first_name
+    def get_category_name(self, object):
+        return object.category.name
+
+    def get_address(self, object):
+        if object.location:
+            return object.location.address
+        else:
+            return "Unknown"
+
+    def get_images(self, object):
+        return [
+            self.context["request"].build_absolute_uri(img.image_url)
+            for img in object.rental_images.all()
+        ]
 
 
 class DetailRentalSerializer(serializers.ModelSerializer):

@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # from django.contrib.gis.db import models as geo_models
 from core.utils.managers import ActiveManager
@@ -160,3 +161,7 @@ class RentalImage(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def image_url(self):
+        return f"{self.image.url}"

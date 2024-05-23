@@ -1,17 +1,19 @@
 """ Viewsets for rental models."""
 
-from rest_framework import viewsets, filters
-from rest_framework.response import Response
+from django.db import connection
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
+from rest_framework import viewsets, filters
 
-from rentals.models import Category, Rental
+from api.filters import RentalFilterSet
 from api.serializers.rental_serializers import (
     CategorySerializer,
     CreateRentalSerializer,
     DetailRentalSerializer,
     ListRentalSerializer,
 )
+from rentals.models import Category, Rental
 
 
 @extend_schema(tags=["Category"])
@@ -26,13 +28,14 @@ class RentalViewSet(viewsets.ModelViewSet):
 
     queryset = Rental.objects.all()
     serializer_class = CreateRentalSerializer
+    http_method_names = ["get"]
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
         filters.OrderingFilter,
     ]
-    filterset_fields = ["is_featured"]
-    search_fields = ["title", "owner__first_name"]
+    filterset_class = RentalFilterSet
+    search_fields = ["location__address", "title"]
     ordering_fields = ["id", "date_added"]
     ordering = ["-date_added"]
 
@@ -42,3 +45,18 @@ class RentalViewSet(viewsets.ModelViewSet):
         elif self.action == "retrieve":
             return DetailRentalSerializer
         return super().get_serializer_class()
+
+    def get_queryset(self):
+        if self.action == "list":
+            return (
+                self.queryset.select_related("category", "location")
+                .prefetch_related("rental_images")
+                .only(
+                    "title",
+                    "monthly_rent",
+                    "description",
+                    "category__name",
+                    "location__address",
+                )
+            )
+        return super().get_queryset()
