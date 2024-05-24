@@ -1,10 +1,12 @@
 """ Viewsets for rental models."""
 
 from django.db import connection
-from django.db.models import Q
+from django.db.models import Q, Min, Max
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, filters
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from api.filters import RentalFilterSet
 from api.serializers.rental_serializers import (
@@ -60,3 +62,14 @@ class RentalViewSet(viewsets.ModelViewSet):
                 )
             )
         return super().get_queryset()
+
+
+@extend_schema(tags=["Rental"])
+@api_view(["GET"])
+def get_rent_range(request):
+    """Returns lower and higher end of monthly rent"""
+    rent = Rental.objects.aggregate(
+        min_rent=Min("monthly_rent"), max_rent=Max("monthly_rent")
+    )
+
+    return Response(rent)

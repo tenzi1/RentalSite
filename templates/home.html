@@ -51,7 +51,7 @@
                 <div class="price-input filter-content">
                     <div class="field">
                         <span>Min</span>
-                        <input type="number" class="input-min" value="30000">
+                        <input type="number" class="input-min" value="5000">
                     </div>
                     <div class="separator">-</div>
                     <div class="field">
@@ -74,6 +74,7 @@
             <div class="filter-separator"></div>
 
             <input type="submit" class="filter-btn" value="Filter">
+            <input type="button" class="filter-btn reset-btn" value="Reset" onclick="resetFilter()">
 
         </form>
 
@@ -81,12 +82,12 @@
 
     <main class="main">
         <div class="main-header sticky-top">
-            <div class="first active">
+            <div class="first active featured-rental">
                 <i class="fa fa-cubes" aria-hidden="true"></i>
                 <span class="header-text">Featured Rentals</span>
             </div>
             <span class="divider"></span>
-            <div class="second">
+            <div class="second latest-rental">
                 <i class="fa fa-bolt" aria-hidden="true"></i>
                 <span class="header-text">Latest Rentals</span>
 
