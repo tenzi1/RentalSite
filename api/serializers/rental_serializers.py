@@ -16,14 +16,34 @@ class CategorySerializer(serializers.ModelSerializer):
 class CreateRentalSerializer(serializers.ModelSerializer):
     """Serializer for creating new Rental instace."""
 
+    title = serializers.CharField(
+        label="Rental Title",
+        # help_text=("(Optional) Provide a short tags for your Rental. "),
+        required=True,
+        style={
+            # "template_pack": "rest_framework/inline",
+            "placeholder": "Job Name",
+            "className": "raw",
+        },
+    )
+    description = serializers.CharField(
+        help_text="Provide a short description of your rental.",
+        style={"base_template": "textarea.html", "rows": 10},
+    )
+    num_bedrooms = serializers.IntegerField(label="Number of Rooms", required=True)
+    num_bathrooms = serializers.IntegerField(label="Number of Bathroom", required=True)
+
     class Meta:
         model = Rental
-        exclude = [
-            "owner",
-            "date_added",
-            "date_modified",
-            "is_deleted",
-        ]
+        fields = ["title", "description", "num_bedrooms", "num_bathrooms"]
+        # exclude = [
+        #     "id",
+        #     "owner",
+        #     "location",
+        #     "date_added",
+        #     "date_modified",
+        #     "is_deleted",
+        # ]
 
 
 class ListRentalSerializer(serializers.ModelSerializer):
@@ -69,4 +89,12 @@ class DetailRentalSerializer(serializers.ModelSerializer):
         model = Rental
         exclude = [
             "is_deleted",
+        ]
+
+
+class CreateCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = [
+            "name",
         ]

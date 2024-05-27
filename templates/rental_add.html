@@ -1,0 +1,119 @@
+{% extends '_base.html' %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+<style>
+    body {
+        overflow: auto;
+    }
+
+    /* Add Rental Css */
+    .wrapper {
+        background-color: white;
+    }
+
+    .rental-form {
+        /* background-color: antiquewhite; */
+        margin: 30px auto;
+        padding-bottom: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        gap: 15px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type='date'],
+    textarea {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 1px solid #999;
+        -moz-appearance: 'textfield';
+    }
+
+    .submit-btn {
+        text-align: center;
+    }
+</style>
+<div class="container ">
+    <div class="wrapper">
+
+        <h1 class="text-center p-3">Add your Rental</h1>
+
+        <form method='post' class="row g-3 needs-validation rental-form" novalidate>
+            {% csrf_token %}
+
+
+            {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field }}
+            {% endfor %}
+
+            {% for field in form.visible_fields %}
+            {% if field.name == 'title' or field.name == 'description' %}
+            <div class="col-md-8">
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {% if form.is_bound %}
+                    {% if field.errors %}
+                    {% render_field field class=" form-control is-invalid"%}
+                    {% for error in field.errors %}
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    {% render_field field class="is-valid" %}
+                    {% endif %}
+                    {% else %}
+                    {% render_field field %}
+                    {% endif %}
+
+                    {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text}}</small>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {% if form.is_bound %}
+                    {% if field.errors %}
+                    {% render_field field class="is-invalid"%}
+                    {% for error in field.errors %}
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    {% render_field field class="is-valid" %}
+                    {% endif %}
+                    {% else %}
+                    {% render_field field %}
+                    {% endif %}
+
+                    {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text}}</small>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+
+            {% endfor %}
+            <div class="col-md-4 submit-btn">
+                <input type="submit" class="filter-btn" value="Add Rental">
+            </div>
+
+        </form>
+
+
+    </div>
+
+</div>
+
+{% endblock %}

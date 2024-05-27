@@ -7,6 +7,8 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, filters
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.renderers import TemplateHTMLRenderer
 
 from api.filters import RentalFilterSet
 from api.serializers.rental_serializers import (
@@ -14,6 +16,7 @@ from api.serializers.rental_serializers import (
     CreateRentalSerializer,
     DetailRentalSerializer,
     ListRentalSerializer,
+    CreateCategorySerializer,
 )
 from rentals.models import Category, Rental
 
@@ -73,3 +76,36 @@ def get_rent_range(request):
     )
 
     return Response(rent)
+
+
+@extend_schema(tags=["Rental"])
+class AddRentalView(APIView):
+    """Add Rental View for HTML UI."""
+
+    renderer_classes = [TemplateHTMLRenderer]
+    serializer_class = CreateRentalSerializer
+    template_name = "rental_add.html"
+
+    def get(self, request):
+        serialzer = self.serializer_class(context={"request": request})
+        return Response(data={"form": serialzer}, template_name=self.template_name)
+
+
+@extend_schema(tags=["Category"])
+class AddCategoryView(APIView):
+    """Add Category View for HTML UI."""
+
+    renderer_classes = [TemplateHTMLRenderer]
+    serializer_class = CreateCategorySerializer
+    template_name = "rental_add.html"
+
+    def get(self, request):
+        serializer = self.serializer_class(context={"request": request})
+        return Response(data={"form": serializer}, template_name=self.template_name)
+
+    def post(self, request):
+        print("hererere")
+        data = request.POST
+        print("================================================")
+        print(data)
+        return Response(data={"data": data}, template_name=self.template_name)

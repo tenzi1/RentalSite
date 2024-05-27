@@ -211,12 +211,16 @@ async function renderRental(event) {
         const address = document.createElement('p')
         address.textContent = rental.address
 
+        const rent = document.createElement('p')
+        rent.textContent = `Rs. ${rental.monthly_rent}`
+
         const owner = document.createElement('h6')
         owner.textContent = rental.owner
 
         wrapper.appendChild(title);
         wrapper.appendChild(body);
         wrapper.appendChild(address);
+        wrapper.appendChild(rent)
         wrapper.appendChild(owner);
         card.appendChild(images)
         card.appendChild(wrapper);

@@ -1,13 +1,13 @@
-body {
+/* body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* font-family: Arial, sans-serif; */
     background-color: #f4f4f4;
-}
+} */
 
 .header {
     background-color: rgb(28, 148, 228) !important;
+    z-index: 9;
 }
 
 .nav {
