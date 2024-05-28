@@ -2,7 +2,7 @@
 
 from django import forms
 
-from .models import Rental, Category
+from .models import Rental, Category, RentalImage
 
 
 class CreateRentalForm(forms.ModelForm):
@@ -45,3 +45,39 @@ class CreateRentalForm(forms.ModelForm):
             "category",
             "monthly_rent",
         ]
+
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+
+class CreateRentalImageForm(forms.ModelForm):
+    """Form for adding RentalImages"""
+
+    # images = MultipleFileField(required=True)
+
+    image = forms.FileField(
+        widget=forms.FileInput(attrs={"name": "image", "type": "file"}),
+        help_text="Add your rental image.",
+    )
+
+    class Meta:
+        model = RentalImage
+        fields = ["image"]
+
+
+# class UploadFileForm(forms.Form):
