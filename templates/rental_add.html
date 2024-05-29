@@ -38,6 +38,53 @@
     .submit-btn {
         text-align: center;
     }
+
+
+    .search-container {
+        flex: 1;
+        padding: auto;
+    }
+
+    .form-flex>.search-input {
+
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 1px solid #999;
+        -moz-appearance: 'textfield';
+
+        /* border: none;
+        border-radius: 5px;
+        outline: none;
+        font-size: 16px;
+        width: 100%;
+        padding: 8px 16px; */
+    }
+
+    .form-flex {
+        position: relative;
+        text-align: center;
+        margin: auto;
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgb(28, 148, 228);
+        background-color: rgba(215, 230, 240, 0.664);
+        padding: 8px;
+        outline: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .search-icon:hover {
+        background-color: rgb(28, 148, 228);
+        color: white;
+    }
 </style>
 <div class="container ">
     <div class="wrapper">
@@ -105,9 +152,19 @@
 
 
             {% endfor %}
+
+            <div class="location-container col-12 col-md-8">
+                <label for="">Location:</label>
+                {% include 'components/map.html'%}
+                <small class="form-text text-muted">Add marker near your rental address.</small>
+
+            </div>
+
             <div class="col-md-4 submit-btn">
                 <input type="submit" class="filter-btn" value="Add Rental">
             </div>
+
+
 
         </form>
 

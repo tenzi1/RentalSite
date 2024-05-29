@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 
 from .forms import CreateRentalForm, CreateRentalImageForm
-from .models import Rental, RentalImage
+from .models import Rental, RentalImage, RentalLocation
 
 # Create your views here.
 
@@ -24,8 +24,17 @@ class CreateRentalView(generic.CreateView):
     def form_valid(self, form):
         userprofile = self.request.user.profile
         form.instance.owner = userprofile
-        instance = form.save()
-        return HttpResponseRedirect(reverse("upload-rental-image", args=[instance.id]))
+
+        latitude = form.cleaned_data.get("latitude", None)
+        longitude = form.cleaned_data.get("longitude", None)
+        address = form.cleaned_data.get("address", "Unknown")
+        rental_location, created = RentalLocation.objects.get_or_create(
+            latitude=latitude, longitude=longitude, address=address
+        )
+        form.instance.location = rental_location
+
+        rental = form.save()
+        return HttpResponseRedirect(reverse("upload-rental-image", args=[rental.id]))
 
 
 def upload_rental_image(request, rental_id):

@@ -46,6 +46,16 @@ class CreateRentalForm(forms.ModelForm):
             "monthly_rent",
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["latitude"] = forms.DecimalField(
+            required=False, widget=forms.HiddenInput()
+        )
+        self.fields["longitude"] = forms.DecimalField(
+            required=False, widget=forms.HiddenInput()
+        )
+        self.fields["address"] = forms.CharField(widget=forms.HiddenInput())
+
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True

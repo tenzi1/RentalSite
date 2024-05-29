@@ -3,14 +3,27 @@
 <style>
     #mapid {
         height: 400px;
-        width: 400px;
+        width: 100%;
     }
 </style>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- <form action="" method="get" class="form-flex" id="search-form">
+
+</form> -->
+<div class="form-flex my-1">
+    <input type="text" placeholder="Naya Baneswor" name="search" class="search-input" id="address-input"
+        data-country="NP">
+    <i class="fa fa-search search-icon" id="address-search-btn"></i>
+</div>
+<small class="text-muted">Search your rental location.</small>
+
 
 <div id="mapid"></div>
 <script>
-    var map = L.map('mapid').setView([27.694776305306878, 85.35552978515625], 13); // Default location
+
+    let iniLat = 27.694776305306878
+    let inilng = 85.35552978515625
+    var map = L.map('mapid').setView([iniLat, inilng], 13); // Default location
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
@@ -20,13 +33,81 @@
 
     map.on('click', function (e) {
         circleGroup.clearLayers();
-        var circle = L.circle(e.latlng, { radius: 20 }).addTo(circleGroup)
-        $.get(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, function (data) {
-            window.rental_location['lat'] = data.lat
-            window.rental_location['lng'] = data.lon
-            window.rental_location['address'] = data.display_name
-        });
+        L.marker(e.latlng).addTo(circleGroup)
+        osm_reverse_url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${e.latlng.lat}&lon=${e.latlng.lng}`
+
+        fetch(osm_reverse_url)
+            .then(response => response.json())
+            .then(data => {
+                if (!data) {
+                    alert("Try again!")
+                } else {
+                    document.getElementById('id_latitude').value = data.lat
+                    document.getElementById('id_longitude').value = data.lon
+                    document.getElementById('id_address').value = data.display_name
+
+                }
+                console.log('====>data', data)
+            })
+
     })
+
+    function geocodeAddress(address, countryCode) {
+        let api_enppoint = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&countrycodes=${countryCode}&format=json`
+        fetch(api_enppoint)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    console.log('data==>', data)
+                    let lat = data[0].lat;
+                    let lng = data[0].lon;
+
+                    map.setZoom(19)
+                    map.flyTo([lat, lng]);
+
+                    circleGroup.clearLayers();
+                    var circle = L.circle([lat, lng], { radius: 100 }).addTo(circleGroup)
+                } else {
+                    alert("Address not found");
+                }
+            })
+            .catch(error => console.error("Error fetching geocoding data: ", error))
+    }
+
+
+
+    document.getElementById('address-input').addEventListener('keydown', function (event) {
+        console.log('triggerddd')
+        console.log('this', this)
+        console.log(this.value)
+        if (event.key == "Enter") {
+            event.preventDefault()
+            const address = this.value.trim();
+
+            if (address != '' && this.dataset.country) {
+                geocodeAddress(address, this.dataset.country);
+            } else {
+                map.setView([iniLat, inilng], 13)
+            }
+        }
+
+    })
+
+
+    document.getElementById('address-search-btn').addEventListener('click', function (event) {
+        event.preventDefault()
+        let addres_input = document.getElementById('address-input')
+        const address = addres_input.value.trim();
+
+        if (address != '' && addres_input.dataset.country) {
+            geocodeAddress(address, addres_input.dataset.country);
+        } else {
+            map.setView([iniLat, inilng], 13)
+        }
+    })
+
+    document.getE
+
 
 </script>
 
