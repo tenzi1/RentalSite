@@ -1,0 +1,106 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+    body {
+        overflow: auto;
+    }
+
+    .wrapper {
+        background-color: white;
+        margin-bottom: 30px;
+        min-height: 90vh;
+    }
+
+    #mapid {
+        height: 400px;
+        width: 100%;
+        z-index: 0;
+    }
+</style>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<div class="container">
+    <div class="wrapper row">
+        <h1 class="text-center my-3">{{ rental.title }}</h1>
+
+        <div class="col-md-5">
+            <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in rental.rental_images.all %}
+
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ image.image_url}}" class="d-block w-100" alt="...">
+                    </div>
+                    {% endfor %}
+
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            <div class="location-container my-3">
+                <p><strong>Address:</strong> {{ rental.location.address }}</p>
+                <p><strong>Rental Location:</strong></p>
+                <div id="mapid"></div>
+
+            </div>
+        </div>
+        <div class="rental-detail col-md-6">
+            <p><strong>Owner:</strong> {{ rental.owner.first_name }}</p>
+            <p><strong>Category:</strong> {{ rental.category.name }}</p>
+            <p><strong>Description:</strong> {{ rental.description }}</p>
+            <p><strong>Number of Rooms:</strong> {{ rental.num_bedrooms }}</p>
+            <p><strong>Number of Bathroom:</strong> {{ rental.num_bathrooms }}</p>
+            {% if rental.is_bathroom_shared %}
+            <p><strong>Bathroom (Shared | Private):</strong> Shared</p>
+            {% else %}
+            <p><strong>Bathroom (Shared | Private):</strong> Private</p>
+            {% endif %}
+            {% if rental.has_attached_bathroom %}
+            <p><strong>Bathroom (Attached | Detached):</strong> Attached</p>
+            {% else %}
+            <p><strong>Bathroom (Attached | Detached):</strong> Detached</p>
+            {% endif %}
+            {% if rental.is_kitchen_shared %}
+            <p><strong>Kitchen:</strong> Shared</p>
+            {% else %}
+            <p><strong>Kitchen:</strong> Private</p>
+            {% endif %}
+            <p><strong>Square Footage:</strong> {{ rental.square_footage }}</p>
+            <p><strong>Monthly Rent:</strong> Rs {{ rental.monthly_rent }}</p>
+            <p><strong>Available:</strong> {{ rental.available_for_rent }}</p>
+            <p><strong>Featured:</strong> {{ rental.is_featured }}</p>
+
+            <div>
+                <input type="submit" class="filter-btn" value="Rent It">
+                <input type="submit" class="filter-btn" value="Add to Favourite">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let lat = "{{ rental.location.latitude }}"
+    let lng = "{{ rental.location.longitude}}"
+
+    var map = L.map('mapid').setView([lat, lng], 13); // Default location
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    map.setZoom(19)
+    map.flyTo([lat, lng])
+    L.marker([lat, lng]).addTo(map)
+</script>
+
+{% endblock %}

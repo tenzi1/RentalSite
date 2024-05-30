@@ -15,27 +15,22 @@ body {
 
 .body-container {
     display: flex;
-    height: 100vh;
+    height: 100%;
 }
 
 .sidebar,
 .main {
     flex: 1 auto;
     /* padding: 2rem 3rem; */
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
 }
 
 .sidebar {
-    /* background-color: navy; */
-    /* border-right: 1px solid grey; */
     max-width: 30%;
     min-width: 30%;
     background-color: white;
     scrollbar-width: none;
     box-shadow: 1px 0px 2px -1px rgba(0, 0, 0, 0.5);
-    /* box-shadow: 2px 0 2px -2px rgb(70, 69, 69); */
-    /* margin-right: 4px; */
-
 }
 
 
@@ -59,13 +54,9 @@ body {
 
 .filter-header,
 .main-header {
-    /* padding: 10px 15px; */
     box-shadow: 0px 3px 2px -2px rgba(0, 0, 0, 0.3);
     background-color: white;
-    /* margin-bottom: 10px; */
     font-size: 16px;
-    /* margin: 10px 10px 0 10px; */
-    /* box-shadow: 0 2px 0px rgba(0, 0, 0, 0.1); */
 }
 
 .category-header {
@@ -89,6 +80,7 @@ body {
     margin-left: 1px;
     background-color: white;
     min-width: 65%;
+    overflow-y: scroll;
     /* padding-left: 20px; */
     /* box-shadow: -2px 0 5px rgb(27, 26, 26); */
 }
@@ -124,22 +116,18 @@ body {
 }
 
 .main-body {
-    padding: 10px 15px;
-    margin-bottom: 20px;
+    margin-bottom: 100px;
+    overflow-y: scroll;
 }
 
-.rental-card {
+/* .rental-card {
     display: flex;
-    /* flex-direction: column; */
-    /* align-items: center; */
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 5px;
     overflow: hidden;
     padding: 10px;
     margin-bottom: 15px;
-    /* width: 300px; */
-    /* Adjust based on your design */
-}
+} */
 
 .main-image {
     /* width: 100%; */
@@ -241,7 +229,7 @@ body {
 
 .filter-form,
 .main-body {
-    height: 100vh;
+    height: 100%;
     /* padding: 0px 10px; */
 }
 
@@ -347,6 +335,7 @@ input:focus {
     background-color: rgba(215, 230, 240, 0.664);
     font-size: 16px;
     color: #3d3b3b;
+    cursor: pointer;
 }
 
 .filter-btn:hover {
@@ -379,6 +368,20 @@ input:focus {
 }
 
 
+a {
+    text-decoration: none;
+    color: rgb(33, 37, 41);
+}
+
+.detail-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(215, 230, 240, 0.664);
+    font-size: 16px;
+    color: #3d3b3b;
+    margin-bottom: 8px;
+}
 
 /* 
 .slider {

@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from django.views.generic import TemplateView
@@ -12,6 +13,36 @@ from .models import Rental, RentalImage, RentalLocation
 
 class HomePageView(TemplateView):
     template_name = "home.html"
+
+
+class RentalDetailView(generic.DetailView):
+    model = Rental
+    template_name = "rental_detail.html"
+    pk_url_kwarg = "rental_id"
+
+    def get_queryset(self):
+        return (
+            self.model.objects.select_related("owner", "category", "location")
+            .prefetch_related("rental_images")
+            .only(
+                "owner__first_name",
+                "owner__last_name",
+                "category__name",
+                "location",
+                "title",
+                "description",
+                "num_bedrooms",
+                "num_bathrooms",
+                "is_bathroom_shared",
+                "has_attached_bathroom",
+                "is_kitchen_shared",
+                "square_footage",
+                "monthly_rent",
+                "available_for_rent",
+                "date_added",
+                "is_featured",
+            )
+        )
 
 
 class CreateRentalView(generic.CreateView):
