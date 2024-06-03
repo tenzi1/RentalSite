@@ -1,27 +1,53 @@
-{% extends "account/base_manage.html" %}
+{% extends 'components/form.html' %}
 {% load allauth i18n %}
-{% block head_title %}
-    {% trans "Sign Out" %}
-{% endblock head_title %}
+{% block title %}
+{% trans "Sign Out" %}
+{% endblock %}
 {% block content %}
-    {% element h1 %}
-        {% trans "Sign Out" %}
-    {% endelement %}
-    <p>{% trans 'Are you sure you want to sign out?' %}</p>
-    {% url 'account_logout' as action_url %}
-    {% element form method="post" action=action_url no_visible_fields=True %}
-        {% slot body %}
-            {% csrf_token %}
-            {% if redirect_field_value %}
-                <input type="hidden"
-                       name="{{ redirect_field_name }}"
-                       value="{{ redirect_field_value }}" />
-            {% endif %}
-        {% endslot %}
-        {% slot actions %}
-            {% element button type="submit" %}
-                {% trans 'Sign Out' %}
-            {% endelement %}
-        {% endslot %}
-    {% endelement %}
+<style>
+    /* Add Rental Css */
+    body {
+        overflow: auto;
+    }
+
+    .wrapper {
+        background-color: white;
+        /* height: 100vh; */
+
+    }
+
+    .rental-form {
+        margin: 30px auto;
+        padding-bottom: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        gap: 15px;
+    }
+
+
+
+    .submit-btn {
+        text-align: center;
+    }
+
+    .filter-btn {
+        margin: 0;
+    }
+</style>
+<div class="container">
+    <div class="wrapper">
+        <div class="row p-3">
+            <p class="lead">Are you sure you want to sign out?</p>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p}}
+                <button type="submit" class="filter-btn">Logout</button>
+                <a href="{% url 'home' %}" class="filter-btn">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}

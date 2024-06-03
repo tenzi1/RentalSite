@@ -1,28 +1,56 @@
-{% extends "components/form.html" %}
+{% extends '_base.html' %}
 {% load widget_tweaks %}
-{% load i18n %}
-{% load allauth %}
+
 {% block title %}
-{% trans "Change Password" %}
-{% endblock title %}
+{% endblock%}
+
+{% block styles %}
+<style>
+    /* Add Rental Css */
+    body {
+        overflow: auto;
+    }
+
+    .wrapper {
+        background-color: white;
+        /* height: 100vh; */
+
+    }
+
+    .rental-form {
+        margin: 30px auto;
+        padding-bottom: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        gap: 15px;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 1px solid #999;
+        -moz-appearance: 'textfield';
+    }
+
+    .submit-btn {
+        text-align: center;
+    }
+
+    .filter-btn {
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <div class="container">
     <div class="wrapper">
-        <h1 class="text-center p-3">
-            {% if token_fail %}
-            {% trans "Bad Token" %}
-            {% else %}
-            {% trans "Change Password" %}
-            {% endif %}
-        </h1>
-        {% if token_fail %}
-        {% url 'account_reset_password' as passwd_reset_url %}
-        <p>
-            {% blocktrans %}The password reset link was invalid, possibly because it has already been used. Please
-            request a <a href="{{ passwd_reset_url }}">new password reset</a>.{% endblocktrans %}
-        </p>
-        {% else %}
+        <h1 class="text-center p-3">{% block header %} {% endblock %}</h1>
 
         <form method="post" novalidate class="row g-2 rental-form" enctype="multipart/form-data">
             {% csrf_token %}
@@ -37,6 +65,7 @@
                     {{ field.label_tag }}
                     {% if form.is_bound %}
                     {% if field.errors %}
+
                     {% render_field field class="form-control is-invalid" %}
                     {% for error in field.errors %}
                     <div class="invalid-feedback">
@@ -64,13 +93,17 @@
 
                 </div>
             </div>
-
+            {% if form.errors %}
+            <div class="col-md-6">
+                {% for error in form.non_field_errors %}
+                <p class="text-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
         </form>
-        {% endif %}
+
 
     </div>
+
 </div>
-
-
-
-{% endblock content %}
+{% endblock %}

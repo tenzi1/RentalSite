@@ -1,19 +1,17 @@
 {% extends 'components/form.html' %}
 
 {% block title %}
-Login Page
+Update Profile
 {% endblock %}
 
 {% block header %}
-Login
+Update Profile
 {% endblock %}
-
-
 {% block submit_button %}
 <div>
-    <button type="submit" class="filter-btn">Login</button>
+    <button type="submit" class="filter-btn">Update Profile</button>
 
-    <a href="{% url 'home' %}" class="filter-btn">Cancel</a>
+    <a href="{% url 'profile' %}" class="filter-btn">Cancel</a>
 
 </div>
 

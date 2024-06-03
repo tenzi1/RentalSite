@@ -18,25 +18,42 @@ class SignupPageView(generic.CreateView):
     template_name = "registration/signup.html"
 
 
+def profile_view(request):
+    """
+    Returns user profile informations.
+    """
+    profile = request.user.profile
+    # profile = UserProfile.objects.get(user=request.user)
+    # print("===>")
+    # print(profile.email)
+    # print(request.user)
+    # print(data)
+    return render(request, "registration/user_profile.html", {"profile": profile})
+
+
 def update_profile(request):
     """
     Return form with prepopulated user info. Used for profile information update.
     """
     if request.method == "GET":
         form = CreateUserProfileForm(instance=request.user.profile)
-        return render(request, "registration/user_profile.html", {"form": form})
+        return render(request, "registration/profile_update.html", {"form": form})
 
     elif request.method == "POST":
         form = CreateUserProfileForm(
-            request.POST, request.FILES, instance=request.user.profile
+            data=request.POST, files=request.FILES, instance=request.user.profile
         )
         if form.is_valid():
+            print("=====>")
+            print(form.cleaned_data)
+            print("post", request.POST)
+            print("files", request.FILES)
             form.save()
             messages.success(request, "Your profile has been updated!")
-            return redirect("home")
+            return redirect("profile")
         else:
             form = CreateUserProfileForm(instance=request.user.profile)
-            return render(request, "registration/user_profile.html", {"form": form})
+            return render(request, "registration/profile_update.html", {"form": form})
 
 
 def confirm_logout(request):
