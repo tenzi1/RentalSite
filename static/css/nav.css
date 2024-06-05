@@ -34,6 +34,20 @@
 
 }
 
+.navbar-toggler {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    color: white !important;
+
+}
+
+.fa-bars {
+    padding: 0 !important;
+    /* width: 24px;
+    height: 24px; */
+}
+
 .brand-name {
     color: white;
     text-decoration: none;
@@ -96,6 +110,13 @@
     width: 1px;
     height: 14px;
     background-color: #ccc;
+}
+
+
+@media screen and (max-width: 991px) {
+    .login-signup-divider {
+        display: none;
+    }
 }
 
 /* 
