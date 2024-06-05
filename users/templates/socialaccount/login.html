@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% load i18n %}
+{% load allauth %}
+{% block head_title %}
+{% trans "Sign In" %}
+{% endblock head_title %}
+{% block content %}
+<style>
+    h1 {
+        color: #333;
+    }
+</style>
+<div class="wrapper d-flex justify-content-center align-items-center flex-column mt-5 text-center">
+
+
+    {% if process == "connect" %}
+    <h1 class="text-center p-3">
+        {% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}
+    </h1>
+    <p class="p-3">
+        {% blocktrans with provider.name as provider %}
+        You are about to connect a new third-party account from {{ provider }}.
+        {%endblocktrans %}
+    </p>
+
+    {% else %}
+    <h1 class=" p-3">
+        {% blocktrans with provider.name as provider %}Sign In Via {{ provider }}{% endblocktrans %}
+    </h1>
+    <p class="p-3">
+        {% blocktrans with provider.name as provider %}You are about to sign in using a third-party account from
+        {{provider}}.{% endblocktrans %}
+    </p>
+    {% endif %}
+
+    <!-- <div class=" px-3"> -->
+    <form method="post" class="col-md-2">
+        {% csrf_token %}
+        <input type="submit" class="submit-btn" value="Continue">
+    </form>
+    <!-- </div> -->
+</div>
+
+
+{% endblock content %}

@@ -1,69 +1,33 @@
-{% extends '_base.html' %}
-{% load crispy_forms_tags %}
+{% extends 'layout.html' %}
 {% load widget_tweaks %}
-{% block title %}
-Sign Up
-{% endblock %}
-
+{% load socialaccount %}
 {% block content %}
-
 <style>
-    /* Add Rental Css */
-    body {
-        overflow: auto;
-    }
-
-    .wrapper {
-        background-color: white;
-    }
-
-    .rental-form {
-        margin: 30px auto;
-        padding-bottom: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: start;
-        gap: 15px;
-    }
-
-    input,
-    textarea {
-        width: 100%;
-        padding: 10px;
-        font-size: 14px;
-        border-radius: 5px;
-        border: 1px solid #999;
-        -moz-appearance: 'textfield';
-    }
-
-    .submit-btn {
-        text-align: center;
-    }
-
-    .filter-btn {
-        margin: 0;
+    .opaque-bg {
+        background: rgba(255, 255, 255, .1);
+        /* Adjust the RGBA values to control the opacity */
     }
 </style>
-<div class="container">
-    <div class="wrapper">
-        <h1 class="text-center p-3">Register your account</h1>
+<div class="d-flex flex-column justify-content-center align-items-center" style="height: 100vh;">
+    <div>
+        <h1 class="text-center mb-4 display-2">Easy Rental</h1>
 
-        <form method="post" novalidate class="row g-2 rental-form">
-            {% csrf_token %}
+        <div class="wrapper my-auto opaque-bg">
+            <form action="{% url 'account_signup' %}" method="POST" class="my-auto" novalidate>
+                <div class="">
+                    {% csrf_token %}
 
-            {% for hidden_field in form.hidden_fields %}
-            {{ hidden_field }}
-            {% endfor %}
+                    {% for hidden_field in form.hidden_fields %}
+                    {{ hidden_field }}
+                    {% endfor %}
 
-            {% for field in form.visible_fields %}
-            <div class="col-md-6">
-                <div class="form-group">
-                    {{ field.label_tag }}
+                    {% for field in form.visible_fields %}
                     {% if form.is_bound %}
                     {% if field.errors %}
+
                     {% render_field field class="form-control is-invalid" %}
                     {% for error in field.errors %}
-                    <div class="invalid-feedback">
+                    <div class="invalid-feedback" style="color:#ff00007e;">
                         {{ error }}
                     </div>
                     {% endfor %}
@@ -71,59 +35,35 @@ Sign Up
                     {% render_field field class="is-valid" %}
                     {% endif %}
                     {% else %}
-                    {% render_field field %}
+                    {% render_field field class="form-control" %}
                     {% endif %}
                     {% if field.help_text %}
                     <small class="form-text text-muted">{{ field.help_text }}</small>
                     {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-            <div class="col-md-6">
-                <div class="col-4">
-                    <input type="submit" class="filter-btn" value="Register">
+                    {% endfor %}
+
+                    {% if form.errors %}
+                    <div class="col-md-6">
+                        {% for error in form.non_field_errors %}
+                        <p class="text-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <input class="border submit-btn w-100 my-3 py-2" type="submit" value="Sign Up">
 
                 </div>
-            </div>
 
-        </form>
-    </div>
-</div>
-<!-- <div class="container wrapper mt-3">
-    <h2 class="text-center p-3">Sign Up</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-
-            <form method="post" novalidate>
-                {% csrf_token %}
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        {{ form.email|as_crispy_field }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        {{ form.username|as_crispy_field }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        {{ form.password1|as_crispy_field }}
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        {{ form.password2|as_crispy_field }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        <button class="btn btn-info" type="submit">Sign Up</button>
-                    </div>
-                </div>
             </form>
+            <p class="text-center text-muted">or</p>
+            <div class=" mt-3">
+                <a href="{% provider_login_url 'google' %}">
+                    <button class="btn w-100 py-2 border google-signin">
+                        <i class="fa fa-google fa-fw"></i>
+                        <span> Sign in with google</span>
+                    </button>
+                </a>
+            </div>
         </div>
     </div>
-</div> -->
+</div>
 {% endblock %}

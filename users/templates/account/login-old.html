@@ -1,0 +1,26 @@
+{% extends 'components/form.html' %}
+{% load socialaccount %}
+{% block title %}
+Login Page
+{% endblock %}
+
+{% block header %}
+Login
+{% endblock %}
+
+
+{% block submit_button %}
+<div>
+    <button type="submit" class="filter-btn">Login</button>
+
+    <a href="{% url 'home' %}" class="filter-btn">Cancel</a>
+
+</div>
+<div>
+    <a href="{% provider_login_url 'google' %}" class="btn btn-primary">
+        <i class="fa fa-google fa-fw"></i>
+        <span>Login with Google</span>
+    </a>
+</div>
+
+{% endblock %}
