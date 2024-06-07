@@ -103,10 +103,11 @@ async function renderRentRange() {
 // common function handleEvent
 // returns search parameter
 function getSearchQuery() {
-    searchInput = document.querySelector('.search-input')
+    let searchInput = document.querySelector('.search-input')
+    let sortInput = document.querySelector('.form-sort')
     let queryDict = {
         'search': searchInput.value,
-        'ordering': '-date_added'
+        'ordering': sortInput.value
     }
     let queryParams = new URLSearchParams(queryDict).toString()
     return queryParams
@@ -163,6 +164,7 @@ async function fetchRentals(event) {
 }
 
 // Function to render data
+
 async function renderRental(event) {
 
     const container = document.querySelector('.main-body');
@@ -172,61 +174,159 @@ async function renderRental(event) {
         return;
     }
     data['results'].forEach(rental => {
-        const card = document.createElement('div');
-        card.classList.add('rental-card');
+        // Create the outermost div
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card mb-3';
+        // cardDiv.style.maxWidth = '540px';
 
-        const images = document.createElement('div')
-        images.classList.add('main-image')
+        // Create the row div
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row g-0';
 
-        if (rental.images.length > 1) {
-            images.innerHTML = `<img src="${rental.images[0]}" class="rental-img">`
+        // Create the left column div
+        const colLeft = document.createElement('div');
+        colLeft.className = 'col-md-4';
 
-            const thumbnail = document.createElement('div')
-            thumbnail.classList.add('thumbnails')
-            for (let i = 1; i < rental.images.length; i++) {
+        // Create the image element
+        const img = document.createElement('img');
+        if (rental.images.length >= 1) {
+            img.src = rental.images[0];
+        }
+        img.className = 'img-fluid rounded-start';
+        img.alt = '...'; // Replace... with your alt text
 
-                // img = document.createElement('img')
-                thumbnail.innerHTML += `<img src="${rental.images[i]}" alt="Thumbnail">`;
+        // Append the image to the left column
+        colLeft.appendChild(img);
 
-            }
+        // Create the right column div
+        const colRight = document.createElement('div');
+        colRight.className = 'col-md-8';
 
-            images.appendChild(thumbnail)
-        } else if (rental.images.length == 1) {
-            images.innerHTML = `<img src="${rental.images[0]}" class="rental-img">`
+        // Create the card body div
+        const cardBodyDiv = document.createElement('div');
+        cardBodyDiv.className = 'card-body';
 
+        // Create the card title h5
+        const cardTitle = document.createElement('h5');
+        cardTitle.className = 'card-title';
+        cardTitle.textContent = rental.title;
+
+        // Create the first card text p
+        const cardText1 = document.createElement('p');
+        cardText1.className = 'card-text';
+        cardText1.textContent = rental.description.slice(0, 150) + "...";
+
+        const cardText2 = document.createElement('p');
+        cardText2.className = 'card-text';
+        cardText2.textContent = rental.address.split(',').slice(0, 2);
+        // Create the second card text p
+        const cardText3 = document.createElement('p');
+        cardText3.className = 'card-text';
+        if (rental.days_since_modified > 1) {
+            cardText3.innerHTML = `<small class="text-muted">Last updated ${rental.days_since_modified} days ago</small>`;
+        } else if (rental.days_since_modified == 1) {
+            cardText3.innerHTML = `<small class="text-muted">Last updated ${rental.days_since_modified} day ago</small>`;
         } else {
-            images.innerHTML = `<img src="#" class="rental-img" style="width:257px">`
-
+            cardText3.innerHTML = `<small class="text-muted">Last updated today</small>`;
         }
 
-        const wrapper = document.createElement('div')
-        wrapper.classList.add('description-section')
+        const cardText4 = document.createElement('p');
+        cardText4.className = 'card-text';
+        cardText4.innerHTML = `Rs. ${rental.monthly_rent}`;
 
-        const title = document.createElement('h3');
-        title.textContent = rental.title;
+        const anchor = document.createElement('a');
+        anchor.className = 'filter-btn'
+        anchor.innerHTML = 'View'
+        anchor.href = `/rental_detail/${rental.id}/`
+        // Append the card title and texts to the card body
+        cardBodyDiv.appendChild(cardTitle);
+        cardBodyDiv.appendChild(cardText1);
+        cardBodyDiv.appendChild(cardText2);
+        cardBodyDiv.appendChild(cardText4);
+        cardBodyDiv.appendChild(cardText3);
+        cardBodyDiv.appendChild(anchor)
 
-        const body = document.createElement('p');
-        body.textContent = rental.description;
+        // Append the card body to the right column
+        colRight.appendChild(cardBodyDiv);
 
-        const address = document.createElement('p')
-        address.textContent = rental.address
+        // Append the columns to the row
+        rowDiv.appendChild(colLeft);
+        rowDiv.appendChild(colRight);
 
-        const rent = document.createElement('p')
-        rent.textContent = `Rs. ${rental.monthly_rent}`
+        // Append the row to the card
+        cardDiv.appendChild(rowDiv);
 
-        const owner = document.createElement('h6')
-        owner.textContent = rental.owner
+        // Finally, append the card to the body of the document
+        const container = document.querySelector('.main-body');
 
-        wrapper.appendChild(title);
-        wrapper.appendChild(body);
-        wrapper.appendChild(address);
-        wrapper.appendChild(rent)
-        wrapper.appendChild(owner);
-        card.appendChild(images)
-        card.appendChild(wrapper);
-        container.appendChild(card);
+        container.appendChild(cardDiv);
+
     })
 }
+// async function renderRental(event) {
+
+//     const container = document.querySelector('.main-body');
+//     container.innerHTML = '';
+//     const data = await fetchRentals(event);
+//     if (!data) {
+//         return;
+//     }
+//     data['results'].forEach(rental => {
+//         const card = document.createElement('div');
+//         card.classList.add('rental-card');
+
+//         const images = document.createElement('div')
+//         images.classList.add('main-image')
+
+//         if (rental.images.length > 1) {
+//             images.innerHTML = `<img src="${rental.images[0]}" class="rental-img">`
+
+//             const thumbnail = document.createElement('div')
+//             thumbnail.classList.add('thumbnails')
+//             for (let i = 1; i < rental.images.length; i++) {
+
+//                 // img = document.createElement('img')
+//                 thumbnail.innerHTML += `<img src="${rental.images[i]}" alt="Thumbnail">`;
+
+//             }
+
+//             images.appendChild(thumbnail)
+//         } else if (rental.images.length == 1) {
+//             images.innerHTML = `<img src="${rental.images[0]}" class="rental-img">`
+
+//         } else {
+//             images.innerHTML = `<img src="#" class="rental-img" style="width:257px">`
+
+//         }
+
+//         const wrapper = document.createElement('div')
+//         wrapper.classList.add('description-section')
+
+//         const title = document.createElement('h3');
+//         title.textContent = rental.title;
+
+//         const body = document.createElement('p');
+//         body.textContent = rental.description;
+
+//         const address = document.createElement('p')
+//         address.textContent = rental.address
+
+//         const rent = document.createElement('p')
+//         rent.textContent = `Rs. ${rental.monthly_rent}`
+
+//         const owner = document.createElement('h6')
+//         owner.textContent = rental.owner
+
+//         wrapper.appendChild(title);
+//         wrapper.appendChild(body);
+//         wrapper.appendChild(address);
+//         wrapper.appendChild(rent)
+//         wrapper.appendChild(owner);
+//         card.appendChild(images)
+//         card.appendChild(wrapper);
+//         container.appendChild(card);
+//     })
+// }
 
 document.getElementById('search-form').addEventListener('submit', renderRental)
 document.querySelector('.search-icon').addEventListener('click', renderRental)

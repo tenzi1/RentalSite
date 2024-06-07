@@ -46,12 +46,16 @@ class CreateRentalSerializer(serializers.ModelSerializer):
         # ]
 
 
+from datetime import datetime, timezone
+
+
 class ListRentalSerializer(serializers.ModelSerializer):
     """Serializer for listing Rental instances."""
 
     address = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
     category_name = serializers.SerializerMethodField()
+    days_since_modified = serializers.SerializerMethodField()
 
     class Meta:
         model = Rental
@@ -63,8 +67,9 @@ class ListRentalSerializer(serializers.ModelSerializer):
             "address",
             "category_name",
             "images",
+            "days_since_modified",
         )
-        depth = 1
+        # depth = 1
 
     def get_category_name(self, object):
         return object.category.name
@@ -80,6 +85,17 @@ class ListRentalSerializer(serializers.ModelSerializer):
             self.context["request"].build_absolute_uri(img.image_url)
             for img in object.rental_images.all()
         ]
+
+    def get_days_since_modified(self, object):
+        if object.date_modified is not None:
+            return self.get_day(object.date_modified)
+        else:
+            return self.get_day(object.date_added)
+
+    def get_day(self, date):
+        now = datetime.now(timezone.utc)
+        delta = now - date
+        return delta.days
 
 
 class DetailRentalSerializer(serializers.ModelSerializer):

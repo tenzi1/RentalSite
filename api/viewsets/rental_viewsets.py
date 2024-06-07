@@ -41,7 +41,7 @@ class RentalViewSet(viewsets.ModelViewSet):
     ]
     filterset_class = RentalFilterSet
     search_fields = ["location__address", "title"]
-    ordering_fields = ["id", "date_added"]
+    ordering_fields = ["id", "date_added", "monthly_rent"]
     ordering = ["-date_added"]
 
     def get_serializer_class(self):
@@ -62,6 +62,8 @@ class RentalViewSet(viewsets.ModelViewSet):
                     "description",
                     "category__name",
                     "location__address",
+                    "date_modified",
+                    "date_added",
                 )
             )
         return super().get_queryset()
