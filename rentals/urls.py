@@ -1,6 +1,12 @@
 from django.urls import path
 
-from .views import HomePageView, CreateRentalView, RentalDetailView, upload_rental_image
+from .views import (
+    HomePageView,
+    CreateRentalView,
+    UpdateRentalView,
+    RentalDetailView,
+    upload_rental_image,
+)
 
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
@@ -9,6 +15,11 @@ urlpatterns = [
         "rental_detail/<int:rental_id>/",
         RentalDetailView.as_view(),
         name="rental-detail",
+    ),
+    path(
+        "update_rental/<int:rental_id>/",
+        UpdateRentalView.as_view(),
+        name="update-rental",
     ),
     path(
         "upload_rental_image/<int:rental_id>/",

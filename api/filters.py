@@ -21,6 +21,11 @@ class RentalFilterSet(django_filters.FilterSet):
     featured = django_filters.BooleanFilter(
         field_name="is_featured", lookup_expr="exact"
     )
+    owned = django_filters.BooleanFilter(method="filter_owned_by_user")
+
+    def filter_owned_by_user(self, queryset, name, value):
+        """filters queryset by current owner."""
+        return queryset.filter(owner__user=self.request.user)
 
     class Meta:
         model = Rental

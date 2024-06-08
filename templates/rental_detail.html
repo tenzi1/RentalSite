@@ -11,7 +11,8 @@
     .wrapper {
         background-color: white;
         margin-bottom: 30px;
-        min-height: 90vh;
+        /* min-height: 90vh;
+        max-height: fit-content; */
     }
 
     #mapid {
@@ -82,9 +83,14 @@
             <p><strong>Featured:</strong> {{ rental.is_featured }}</p>
 
             <div>
+
+                {% if request.user == rental.owner.user%}
+                <a href="{% url 'update-rental' rental.id %}" class="filter-btn">Update Details</a>
+                <a href="{% url 'update-rental' rental.id %}" class="filter-btn">Update Images</a>
+                {% else %}
                 <input type="submit" class="filter-btn" value="Rent It">
                 <input type="submit" class="filter-btn" value="Add to Favourite">
-
+                {% endif %}
             </div>
         </div>
     </div>

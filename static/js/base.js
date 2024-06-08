@@ -19,25 +19,37 @@ function showCheckboxes() {
     }
 }
 
+const elements = document.querySelectorAll('.header-child');
+
+elements.forEach(element => {
+
+    element.addEventListener('click', () => {
+        elements.forEach(el => el.classList.remove('active'));
+        element.classList.toggle('active');
+        console.log('lakjdflajldskjflkasd', element)
+    });
+    element.addEventListener('click', renderRental)
+});
+
 
 // // toggle active class
-const firstElement = document.querySelector('.featured-rental');
-const secondElement = document.querySelector('.latest-rental');
+// const firstElement = document.querySelector('.featured-rental');
+// const secondElement = document.querySelector('.latest-rental');
 
 
-function toggleActiveClass() {
-    firstElement.classList.remove('active');
-    secondElement.classList.remove('active');
-    if (this == firstElement) {
-        firstElement.classList.add('active');
-    } else {
-        secondElement.classList.add('active')
-    }
-}
-firstElement.addEventListener('click', toggleActiveClass);
-secondElement.addEventListener('click', toggleActiveClass);
-firstElement.addEventListener('click', renderRental)
-secondElement.addEventListener('click', renderRental)
+// function toggleActiveClass() {
+//     firstElement.classList.remove('active');
+//     secondElement.classList.remove('active');
+//     if (this == firstElement) {
+//         firstElement.classList.add('active');
+//     } else {
+//         secondElement.classList.add('active')
+//     }
+// }
+// firstElement.addEventListener('click', toggleActiveClass);
+// secondElement.addEventListener('click', toggleActiveClass);
+// firstElement.addEventListener('click', renderRental)
+// secondElement.addEventListener('click', renderRental)
 
 
 // Fetch Categories
@@ -137,9 +149,11 @@ function getFilterQuery() {
     const locationInput = document.querySelector('.location-input input');
     filterData['address'] = locationInput.value;
 
-    const featured = document.querySelector('.main-header .active')
-    if (featured.classList.contains('featured-rental')) {
+    const headerChild = document.querySelector('.main-header .active')
+    if (headerChild.classList.contains('featured-rental')) {
         filterData['featured'] = true
+    } else if (headerChild.classList.contains('owned-rental')) {
+        filterData['owned'] = true
     }
 
     let filterParams = new URLSearchParams(filterData).toString()
