@@ -1,0 +1,91 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<style>
+    .wrapper {
+        background-color: white;
+        height: fit-content;
+        padding-bottom: 20px;
+        min-height: 100vh;
+    }
+
+    .card-body {
+        padding: 0px;
+    }
+
+    form {
+        margin: 0;
+    }
+
+    .add-image {
+        background-color: rgb(28, 148, 228);
+
+        /* background-color: grey; */
+        text-align: center;
+
+    }
+
+    .add-btn {
+        border: solid 1px white;
+        background-color: white;
+        color: rgb(28, 148, 228);
+    }
+
+    .add-btn:hover {
+        background-color: rgb(28, 148, 228);
+
+        color: white;
+
+    }
+
+    .image-container {}
+</style>
+<div class="container">
+    <div class="wrapper flex-column">
+
+
+        <div class="add-image row mx-auto mt-3 text-white" style="height: 200px;">
+            <div class="m-auto">
+                <h3 class="text-center  my-3">
+                    Add Images for your Rental
+                </h3>
+                <a href="{% url 'upload-rental-image' rental_id %}" class="filter-btn add-btn">Add Images</a>
+            </div>
+
+        </div>
+        <div class=" image-container row g-3 mt-3 d-flex justify-content-center align-items-center">
+            <h3 class="text-center">Current Rental Images</h3>
+            {% for img in rental_images %}
+            <div class="col-md-4">
+                <div class="card shadow-sm" style="width:100%; height: auto;">
+                    <img src="{{ img.image_url }}" class="card-img-top" alt="...">
+
+                    <div class="card-body">
+
+                    </div>
+
+                    </ul>
+                    <div class="card-body text-center m-auto p-auto">
+                        <form action="{% url 'remove-rental-images' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="image_id" value="{{ img.id }}">
+                            <input type="hidden" name="rental_id" value="{{ img.rental.id }}">
+
+                            <input type="submit" value="Remove" class="filter-btn">
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+
+
+
+        </div>
+    </div>
+
+
+
+
+</div>
+{% endblock %}

@@ -1,4 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import user_passes_test
+from django.core.exceptions import PermissionDenied
 from django.db.models.query import QuerySet
 from django.forms import BaseModelForm
 from django.shortcuts import render, redirect, get_object_or_404
@@ -70,13 +72,17 @@ class CreateRentalView(LoginRequiredMixin, generic.CreateView):
         return HttpResponseRedirect(reverse("upload-rental-image", args=[rental.id]))
 
 
-class UpdateRentalView(LoginRequiredMixin, generic.UpdateView):
+class UpdateRentalView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     """View to update particular rental instance."""
 
     model = Rental
     template_name = "rental_update.html"
     form_class = UpdateRentalForm
     pk_url_kwarg = "rental_id"
+
+    def test_func(self):
+        rental = self.get_object()
+        return rental.owner.user == self.request.user
 
     def form_valid(self, form):
 
@@ -89,6 +95,26 @@ class UpdateRentalView(LoginRequiredMixin, generic.UpdateView):
         form.instance.location = rental_location
         rental = form.save()
         return HttpResponseRedirect(reverse("rental-detail", args=[rental.id]))
+
+
+class ListRentalImageView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
+    model = RentalImage
+    template_name = "rental_images.html"
+    context_object_name = "rental_images"
+    pk_url_kwarg = "rental_id"
+
+    def test_func(self):
+        rental_id = self.kwargs.get("rental_id")
+        rental = get_object_or_404(Rental, pk=rental_id)
+        return rental.owner.user == self.request.user
+
+    def get_queryset(self):
+        return super().get_queryset().filter(rental=self.kwargs.get("rental_id"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rental_id"] = self.kwargs["rental_id"]
+        return context
 
 
 def upload_rental_image(request, rental_id):
@@ -107,3 +133,27 @@ def upload_rental_image(request, rental_id):
         form = CreateRentalImageForm()
 
     return render(request, "rental_image_add.html", {"form": form})
+
+
+def delete_rental_image(request):
+    """Remove rental Image."""
+    if request.method == "POST":
+        image_id = request.POST.get("image_id", None)
+        rental_id = request.POST.get("rental_id", None)
+
+        if not image_id or not rental_id:
+            raise PermissionDenied("Invalid request")
+
+        try:
+            image = RentalImage.objects.get(pk=image_id)
+        except RentalImage.DoesNotExist:
+            raise PermissionDenied("Image does not exist")
+
+        if image.rental.owner.user != request.user:
+            raise PermissionDenied("You do not have permission to delete this image.")
+
+        image.delete()
+
+        return HttpResponseRedirect(reverse("list-rental-images", args=[rental_id]))
+    else:
+        raise PermissionDenied("Invalid request method.")

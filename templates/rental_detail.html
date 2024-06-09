@@ -86,7 +86,7 @@
 
                 {% if request.user == rental.owner.user%}
                 <a href="{% url 'update-rental' rental.id %}" class="filter-btn">Update Details</a>
-                <a href="{% url 'update-rental' rental.id %}" class="filter-btn">Update Images</a>
+                <a href="{% url 'list-rental-images' rental.id %}" class="filter-btn">Update Images</a>
                 {% else %}
                 <input type="submit" class="filter-btn" value="Rent It">
                 <input type="submit" class="filter-btn" value="Add to Favourite">
