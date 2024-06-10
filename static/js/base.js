@@ -154,6 +154,8 @@ function getFilterQuery() {
         filterData['featured'] = true
     } else if (headerChild.classList.contains('owned-rental')) {
         filterData['owned'] = true
+    } else if (headerChild.classList.contains('favorite')) {
+        filterData['favorite'] = true
     }
 
     let filterParams = new URLSearchParams(filterData).toString()

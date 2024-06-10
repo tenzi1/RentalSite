@@ -89,7 +89,14 @@
                 <a href="{% url 'list-rental-images' rental.id %}" class="filter-btn">Update Images</a>
                 {% else %}
                 <input type="submit" class="filter-btn" value="Rent It">
-                <input type="submit" class="filter-btn" value="Add to Favourite">
+                {% if favorated_by_user %}
+                <a href="{% url 'remove-favorite' rental.id %}" class="filter-btn">Remove from Favorite</a>
+
+                <!-- <input type="submit" class="filter-btn" value="Add to Favourite"> -->
+                {% else %}
+                <a href="{% url 'add-favorite' rental.id %}" class="filter-btn">Add to Favorite</a>
+
+                {% endif %}
                 {% endif %}
             </div>
         </div>

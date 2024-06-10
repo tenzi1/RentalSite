@@ -8,6 +8,8 @@ from .views import (
     ListRentalImageView,
     upload_rental_image,
     delete_rental_image,
+    add_favorite,
+    remove_favorite,
 )
 
 urlpatterns = [
@@ -38,8 +40,18 @@ urlpatterns = [
         name="list-rental-images",
     ),
     path(
-        "remove_rental_images",
+        "remove_rental_images/",
         delete_rental_image,
         name="remove-rental-images",
+    ),
+    path(
+        "add_favorite/<int:rental_id>",
+        add_favorite,
+        name="add-favorite",
+    ),
+    path(
+        "remove_favorite/<int:rental_id>/",
+        remove_favorite,
+        name="remove-favorite",
     ),
 ]

@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models.query import QuerySet
 from django.forms import BaseModelForm
@@ -10,7 +10,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 
 from .forms import CreateRentalForm, CreateRentalImageForm, UpdateRentalForm
-from .models import Rental, RentalImage, RentalLocation
+from .models import Favorite, Rental, RentalImage, RentalLocation
 
 # Create your views here.
 
@@ -47,6 +47,17 @@ class RentalDetailView(generic.DetailView):
                 "is_featured",
             )
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            rental = self.get_object()
+            favorited_by_user = self.request.user.favorite_set.filter(
+                rental=rental
+            ).exists()
+            print("=======> ", favorited_by_user)
+            context["favorated_by_user"] = favorited_by_user
+        return context
 
 
 class CreateRentalView(LoginRequiredMixin, generic.CreateView):
@@ -157,3 +168,19 @@ def delete_rental_image(request):
         return HttpResponseRedirect(reverse("list-rental-images", args=[rental_id]))
     else:
         raise PermissionDenied("Invalid request method.")
+
+
+@login_required
+def add_favorite(request, rental_id):
+    """Add favorite rental"""
+    rental = get_object_or_404(Rental, id=rental_id)
+    instance, created = Favorite.objects.get_or_create(user=request.user, rental=rental)
+    return HttpResponseRedirect(reverse("rental-detail", args=[rental_id]))
+
+
+@login_required
+def remove_favorite(request, rental_id):
+    """Remove favorite rental"""
+    rental = get_object_or_404(Rental, id=rental_id)
+    Favorite.objects.filter(user=request.user, rental=rental).delete()
+    return HttpResponseRedirect(reverse("rental-detail", args=[rental_id]))

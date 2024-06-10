@@ -167,3 +167,10 @@ class RentalImage(models.Model):
     @property
     def image_url(self):
         return f"{self.image.url}"
+
+
+class Favorite(models.Model):
+    """To implement favorite feature."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rental = models.ForeignKey(Rental, on_delete=models.CASCADE)
