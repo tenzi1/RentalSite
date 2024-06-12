@@ -10,6 +10,8 @@ from .views import (
     delete_rental_image,
     add_favorite,
     remove_favorite,
+    book_rental,
+    cancel_booking,
 )
 
 urlpatterns = [
@@ -53,5 +55,15 @@ urlpatterns = [
         "remove_favorite/<int:rental_id>/",
         remove_favorite,
         name="remove-favorite",
+    ),
+    path(
+        "book_rental/<int:rental_id>/",
+        book_rental,
+        name="book-rental",
+    ),
+    path(
+        "cancel_booking/<int:rental_id>/",
+        cancel_booking,
+        name="cancel-booking",
     ),
 ]

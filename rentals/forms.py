@@ -1,8 +1,11 @@
 """Forms for Rental Models"""
 
+from typing import Any
 from django import forms
+from datetime import datetime
+from django.core.exceptions import ValidationError
 
-from .models import Rental, Category, RentalImage
+from .models import Booking, Rental, Category, RentalImage
 
 
 class CreateRentalForm(forms.ModelForm):
@@ -151,3 +154,31 @@ class CreateRentalImageForm(forms.ModelForm):
 
 
 # class UploadFileForm(forms.Form):
+
+
+class BookingForm(forms.ModelForm):
+    rent_start_date = forms.DateField(widget=forms.SelectDateWidget)
+    rent_end_date = forms.DateField(widget=forms.SelectDateWidget)
+
+    class Meta:
+        model = Booking
+        fields = (
+            "rent_start_date",
+            "rent_end_date",
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        rent_start_date = cleaned_data.get("rent_start_date")
+        rent_end_date = cleaned_data.get("rent_end_date")
+
+        today = datetime.today().date()
+        if rent_start_date < today:
+            raise ValidationError(
+                "Rent Start Date cannot be past date.", code="invalid"
+            )
+
+        if rent_start_date > rent_end_date:
+            raise ValidationError(
+                "Rent Start Date cannot be later than Rent End Date.", code="invalid"
+            )

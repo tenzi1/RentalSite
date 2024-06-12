@@ -26,7 +26,6 @@ elements.forEach(element => {
     element.addEventListener('click', () => {
         elements.forEach(el => el.classList.remove('active'));
         element.classList.toggle('active');
-        console.log('lakjdflajldskjflkasd', element)
     });
     element.addEventListener('click', renderRental)
 });
@@ -156,6 +155,8 @@ function getFilterQuery() {
         filterData['owned'] = true
     } else if (headerChild.classList.contains('favorite')) {
         filterData['favorite'] = true
+    } else if (headerChild.classList.contains('booked-rental')) {
+        filterData['booking'] = true
     }
 
     let filterParams = new URLSearchParams(filterData).toString()
@@ -223,7 +224,7 @@ async function renderRental(event) {
         cardBodyDiv.className = 'card-body';
 
         // Create the card title h5
-        const cardTitle = document.createElement('h5');
+        const cardTitle = document.createElement('h4');
         cardTitle.className = 'card-title';
         cardTitle.textContent = rental.title;
 
@@ -234,7 +235,7 @@ async function renderRental(event) {
 
         const cardText2 = document.createElement('p');
         cardText2.className = 'card-text';
-        cardText2.textContent = rental.address.split(',').slice(0, 2);
+        cardText2.innerHTML = `<b>Location</b> : ${rental.address.split(',').slice(0, 2)}`;
         // Create the second card text p
         const cardText3 = document.createElement('p');
         cardText3.className = 'card-text';
@@ -248,19 +249,39 @@ async function renderRental(event) {
 
         const cardText4 = document.createElement('p');
         cardText4.className = 'card-text';
-        cardText4.innerHTML = `Rs. ${rental.monthly_rent}`;
+        cardText4.innerHTML = `<b>Rental Price</b> :  Rs. ${rental.monthly_rent}`;
+
 
         const anchor = document.createElement('a');
         anchor.className = 'filter-btn'
         anchor.innerHTML = 'View'
         anchor.href = `/rental_detail/${rental.id}/`
+
+
         // Append the card title and texts to the card body
         cardBodyDiv.appendChild(cardTitle);
         cardBodyDiv.appendChild(cardText1);
         cardBodyDiv.appendChild(cardText2);
         cardBodyDiv.appendChild(cardText4);
+        if (rental.status) {
+            cardText5 = document.createElement('p');
+            cardText5.className = 'card-text';
+            cardText5.innerHTML = `<b>Booking Status</b> : <strong>${rental.status}</strong>`
+            cardBodyDiv.appendChild(cardText5)
+        }
         cardBodyDiv.appendChild(cardText3);
+
         cardBodyDiv.appendChild(anchor)
+        // if (rental.status) {
+        //     const statusBtn = document.createElement('a');
+        //     statusBtn.className = 'filter-btn'
+        //     statusBtn.innerHTML = "Cancel Booking"
+        //     // statusBtn.href = `/rental_detail/${rental.id}/`
+        //     cardBodyDiv.appendChild(statusBtn)
+
+
+
+        // }
 
         // Append the card body to the right column
         colRight.appendChild(cardBodyDiv);

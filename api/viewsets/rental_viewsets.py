@@ -106,8 +106,5 @@ class AddCategoryView(APIView):
         return Response(data={"form": serializer}, template_name=self.template_name)
 
     def post(self, request):
-        print("hererere")
         data = request.POST
-        print("================================================")
-        print(data)
         return Response(data={"data": data}, template_name=self.template_name)

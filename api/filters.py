@@ -1,6 +1,7 @@
 """Custom Filterset"""
 
 import django_filters
+from django.db.models import F
 
 from rentals.models import Rental
 
@@ -23,14 +24,24 @@ class RentalFilterSet(django_filters.FilterSet):
     )
     owned = django_filters.BooleanFilter(method="filter_owned_by_user")
     favorite = django_filters.BooleanFilter(method="filter_favorated_by_user")
+    booking = django_filters.BooleanFilter(method="filter_booked_rentals")
 
     def filter_owned_by_user(self, queryset, name, value):
         """filters queryset by current owner."""
-        return queryset.filter(owner__user=self.request.user)
+        return queryset.filter(owner__user=self.request.user).annotate(
+            status=F("booking__status")
+        )
 
     def filter_favorated_by_user(self, queryset, name, value):
         """filters queryset favorated by current user."""
         return queryset.filter(favorite__user=self.request.user)
+
+    def filter_booked_rentals(self, queryset, name, value):
+        """filters booked rental queryset."""
+        qs = queryset.filter(booking__user=self.request.user).annotate(
+            status=F("booking__status")
+        )
+        return qs
 
     class Meta:
         model = Rental

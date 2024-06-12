@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import (
+    Booking,
     Category,
     Rental,
     RentalImage,
@@ -52,6 +53,7 @@ class WardAdmin(admin.ModelAdmin):
     raw_id_fields = ["district"]
 
 
+admin.site.register(Booking)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(District, DistrictAdmin)

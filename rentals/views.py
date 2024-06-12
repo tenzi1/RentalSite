@@ -9,8 +9,13 @@ from django.views.generic import TemplateView
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 
-from .forms import CreateRentalForm, CreateRentalImageForm, UpdateRentalForm
-from .models import Favorite, Rental, RentalImage, RentalLocation
+from .forms import (
+    CreateRentalForm,
+    CreateRentalImageForm,
+    UpdateRentalForm,
+    BookingForm,
+)
+from .models import Favorite, Rental, RentalImage, RentalLocation, Booking
 
 # Create your views here.
 
@@ -55,8 +60,12 @@ class RentalDetailView(generic.DetailView):
             favorited_by_user = self.request.user.favorite_set.filter(
                 rental=rental
             ).exists()
-            print("=======> ", favorited_by_user)
             context["favorated_by_user"] = favorited_by_user
+            context["booked_by_user"] = (
+                self.request.user.booking_set.filter(rental=rental)
+                .exclude(status="CANCELLED")
+                .exists()
+            )
         return context
 
 
@@ -184,3 +193,37 @@ def remove_favorite(request, rental_id):
     rental = get_object_or_404(Rental, id=rental_id)
     Favorite.objects.filter(user=request.user, rental=rental).delete()
     return HttpResponseRedirect(reverse("rental-detail", args=[rental_id]))
+
+
+@login_required
+def book_rental(request, rental_id):
+    rental = get_object_or_404(Rental, id=rental_id)
+    if rental.owner.user == request.user:
+        raise PermissionDenied("Owner cannot be renter for own property")
+
+    if request.method == "GET":
+        form = BookingForm()
+    elif request.method == "POST":
+        form = BookingForm(data=request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.rental = rental
+            booking.user = request.user
+            booking.status = "PENDING"
+            booking.save()
+            return HttpResponseRedirect(reverse("home"))
+    else:
+        raise PermissionDenied("Invalid request method.")
+    return render(request, "booking_form.html", {"form": form})
+
+
+@login_required
+def cancel_booking(request, rental_id):
+    if request.method == "POST":
+        booking = Booking.objects.filter(user=request.user, rental_id=rental_id)
+        if booking.exists():
+            booking = booking.first()
+            booking.status = "CANCELLED"
+            booking.save()
+        return HttpResponseRedirect(reverse("home"))
+    raise PermissionDenied("Invalid request method.")

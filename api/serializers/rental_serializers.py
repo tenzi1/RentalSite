@@ -56,6 +56,7 @@ class ListRentalSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     category_name = serializers.SerializerMethodField()
     days_since_modified = serializers.SerializerMethodField()
+    status = serializers.CharField(required=False, read_only=True)
 
     class Meta:
         model = Rental
@@ -68,6 +69,7 @@ class ListRentalSerializer(serializers.ModelSerializer):
             "category_name",
             "images",
             "days_since_modified",
+            "status",
         )
         # depth = 1
 
@@ -96,6 +98,11 @@ class ListRentalSerializer(serializers.ModelSerializer):
         now = datetime.now(timezone.utc)
         delta = now - date
         return delta.days
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep["status"] = instance.status if hasattr(instance, "status") else None
+        return rep
 
 
 class DetailRentalSerializer(serializers.ModelSerializer):

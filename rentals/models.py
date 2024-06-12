@@ -142,10 +142,10 @@ class Rental(IsDeleted):
     available_for_rent = models.BooleanField(default=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
-    rent_start_date = models.DateField(
-        help_text="Rent Start Date", null=True, blank=True
-    )
-    rent_end_date = models.DateField(help_text="Rent End Date", null=True, blank=True)
+    # rent_start_date = models.DateField(
+    #     help_text="Rent Start Date", null=True, blank=True
+    # )
+    # rent_end_date = models.DateField(help_text="Rent End Date", null=True, blank=True)
     is_featured = models.BooleanField(default=False)
 
     def __str__(self):
@@ -174,3 +174,19 @@ class Favorite(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rental = models.ForeignKey(Rental, on_delete=models.CASCADE)
+
+
+class Booking(IsDeleted):
+    RENTAL_STATUS_CHOICES = (
+        ("PENDING", "pending"),
+        ("CONFIRMED", "confirmed"),
+        ("CANCELLED", "cancelled"),
+    )
+    rental = models.ForeignKey(Rental, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    booking_date = models.DateTimeField(auto_now_add=True)
+    rent_start_date = models.DateField()
+    rent_end_date = models.DateField()
+    status = models.CharField(
+        max_length=20, choices=RENTAL_STATUS_CHOICES, default="PENDING"
+    )
