@@ -6,21 +6,20 @@ from .views import (
     UpdateRentalView,
     RentalDetailView,
     ListRentalImageView,
+    BookingListView,
+    BookingDetailView,
     upload_rental_image,
     delete_rental_image,
     add_favorite,
     remove_favorite,
     book_rental,
     cancel_booking,
+    update_booking,
 )
 
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
-    path(
-        "add_rental/",
-        CreateRentalView.as_view(),
-        name="create-rental",
-    ),
+    path("add_rental/", CreateRentalView.as_view(), name="create-rental"),
     path(
         "rental_detail/<int:rental_id>/",
         RentalDetailView.as_view(),
@@ -41,29 +40,14 @@ urlpatterns = [
         ListRentalImageView.as_view(),
         name="list-rental-images",
     ),
+    path("remove_rental_images/", delete_rental_image, name="remove-rental-images"),
+    path("add_favorite/<int:rental_id>", add_favorite, name="add-favorite"),
+    path("remove_favorite/<int:rental_id>/", remove_favorite, name="remove-favorite"),
+    path("book_rental/<int:rental_id>/", book_rental, name="book-rental"),
+    path("cancel_booking/<int:rental_id>/", cancel_booking, name="cancel-booking"),
+    path("update_booking/<int:rental_id>/", update_booking, name="update-booking"),
+    path("bookings/<int:rental_id>/", BookingListView.as_view(), name="bookings"),
     path(
-        "remove_rental_images/",
-        delete_rental_image,
-        name="remove-rental-images",
-    ),
-    path(
-        "add_favorite/<int:rental_id>",
-        add_favorite,
-        name="add-favorite",
-    ),
-    path(
-        "remove_favorite/<int:rental_id>/",
-        remove_favorite,
-        name="remove-favorite",
-    ),
-    path(
-        "book_rental/<int:rental_id>/",
-        book_rental,
-        name="book-rental",
-    ),
-    path(
-        "cancel_booking/<int:rental_id>/",
-        cancel_booking,
-        name="cancel-booking",
+        "booking/<int:rental_id>/", BookingDetailView.as_view(), name="booking-detail"
     ),
 ]

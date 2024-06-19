@@ -28,9 +28,7 @@ class RentalFilterSet(django_filters.FilterSet):
 
     def filter_owned_by_user(self, queryset, name, value):
         """filters queryset by current owner."""
-        return queryset.filter(owner__user=self.request.user).annotate(
-            status=F("booking__status")
-        )
+        return queryset.filter(owner__user=self.request.user).distinct()
 
     def filter_favorated_by_user(self, queryset, name, value):
         """filters queryset favorated by current user."""

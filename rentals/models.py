@@ -190,3 +190,13 @@ class Booking(IsDeleted):
     status = models.CharField(
         max_length=20, choices=RENTAL_STATUS_CHOICES, default="PENDING"
     )
+
+
+class Notification(models.Model):
+    message = models.CharField(max_length=200)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    def __str__(self):
+        return self.message

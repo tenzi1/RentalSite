@@ -8,6 +8,9 @@ from .forms import CustomUserCreationForm, CreateUserProfileForm
 from .models import UserProfile
 
 
+User = get_user_model()
+
+
 class SignupPageView(generic.CreateView):
     """
     Returns User creation form. upon successfull redirects to login page.
@@ -18,16 +21,15 @@ class SignupPageView(generic.CreateView):
     template_name = "registration/signup.html"
 
 
-def profile_view(request):
+def profile_view(request, user_id=None):
     """
     Returns user profile informations.
     """
-    profile = request.user.profile
-    # profile = UserProfile.objects.get(user=request.user)
-    # print("===>")
-    # print(profile.email)
-    # print(request.user)
-    # print(data)
+    if user_id:
+        user = get_object_or_404(User, pk=user_id)
+        profile = user.profile
+    else:
+        profile = request.user.profile
     return render(request, "registration/user_profile.html", {"profile": profile})
 
 

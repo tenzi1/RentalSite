@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.core.exceptions import PermissionDenied
+from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
 from django.forms import BaseModelForm
 from django.shortcuts import render, redirect, get_object_or_404
@@ -15,7 +16,8 @@ from .forms import (
     UpdateRentalForm,
     BookingForm,
 )
-from .models import Favorite, Rental, RentalImage, RentalLocation, Booking
+from .models import Favorite, Rental, RentalImage, RentalLocation, Booking, Notification
+from .utils import create_rental_notification
 
 # Create your views here.
 
@@ -61,6 +63,9 @@ class RentalDetailView(generic.DetailView):
                 rental=rental
             ).exists()
             context["favorated_by_user"] = favorited_by_user
+            context["booking"] = self.request.user.booking_set.filter(
+                rental=rental
+            ).first()
             context["booked_by_user"] = (
                 self.request.user.booking_set.filter(rental=rental)
                 .exclude(status="CANCELLED")
@@ -198,7 +203,8 @@ def remove_favorite(request, rental_id):
 @login_required
 def book_rental(request, rental_id):
     rental = get_object_or_404(Rental, id=rental_id)
-    if rental.owner.user == request.user:
+    owner = rental.owner.user
+    if owner == request.user:
         raise PermissionDenied("Owner cannot be renter for own property")
 
     if request.method == "GET":
@@ -211,6 +217,9 @@ def book_rental(request, rental_id):
             booking.user = request.user
             booking.status = "PENDING"
             booking.save()
+
+            message = f"Booking: {request.user} has booked your rental {rental_id}"
+            create_rental_notification(to_user=owner, message=message)
             return HttpResponseRedirect(reverse("home"))
     else:
         raise PermissionDenied("Invalid request method.")
@@ -225,5 +234,69 @@ def cancel_booking(request, rental_id):
             booking = booking.first()
             booking.status = "CANCELLED"
             booking.save()
+
+            message = (
+                f"Booking: {request.user} has cancelled booking of rengal {rental_id}"
+            )
+            create_rental_notification(to_user=booking.user, message=message)
         return HttpResponseRedirect(reverse("home"))
     raise PermissionDenied("Invalid request method.")
+
+
+@login_required
+def update_booking(request, rental_id):
+    rental = get_object_or_404(Rental, id=rental_id)
+    if rental.owner.user == request.user:
+        raise PermissionDenied("Owner cannot be renter for own property")
+
+    if request.method == "GET":
+        booking = Booking.objects.filter(user=request.user, rental=rental).first()
+        form = BookingForm(instance=booking)
+
+    elif request.method == "POST":
+        booking = Booking.objects.filter(user=request.user, rental=rental).first()
+        form = BookingForm(request.POST, instance=booking)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.status = "PENDING"
+            booking.save()
+            return HttpResponseRedirect(reverse("home"))
+    else:
+        raise PermissionDenied("Invalid request method.")
+    return render(request, "booking_form.html", {"form": form})
+
+
+class BookingListView(LoginRequiredMixin, generic.ListView):
+    model = Booking
+    template_name = "booking_list.html"
+    context_object_name = "bookings"
+
+    def get_queryset(self) -> QuerySet[reverse_lazy]:
+        rental_id = self.kwargs["rental_id"]
+        rental = get_object_or_404(Rental, id=rental_id)
+        if self.request.user == rental.owner.user:
+            return self.model.objects.select_related("user").filter(
+                rental=self.kwargs["rental_id"]
+            )
+        return self.model.objects.select_related("user").filter(
+            user=self.request.user, rental=rental
+        )
+
+
+class BookingDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Booking
+    template_name = "booking_detail.html"
+    pk_url_kwarg = "rental_id"
+    context_object_name = "booking"
+
+    def get_object(self):
+        try:
+            return (
+                Booking.objects.filter(
+                    rental=self.kwargs["rental_id"], user=self.request.user
+                )
+                .select_related("user", "rental")
+                .first()
+            )
+        except Booking.DoesNotExist:
+            return HttpResponse("Booking Not found for given rental", 400)

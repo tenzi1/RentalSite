@@ -1,0 +1,61 @@
+{% extends '_base.html' %}
+
+{% block title %}
+Booking List
+{% endblock %}
+
+{% block content %}
+<style>
+    .wrapper {
+        background-color: white;
+        /* background-color: #f7f9fc; */
+        padding: 30px;
+        min-height: 100vh;
+
+    }
+
+    .card-wrapper {
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+<div class="container">
+    <div class="wrapper">
+        <h1 class="text-center my-3">Booking Status</h1>
+
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            {% if booking %}
+
+            <div class="col-md-4 col-sm-6">
+                <div class="card card-wrapper">
+                    <div class="card-body">
+                        <h5 class="card-title">Rental Booking</h5>
+                        <p>{{ booking.rental.id }}</p>
+                        <p class="badge bg-dark">{{ booking.status }}</p>
+                        <p>booked by <a href="{% url 'profile' booking.user_id %}">{{ booking.user.username }}</a></p>
+
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Booking Date : {{ booking.booking_date}}</li>
+                        <li class="list-group-item">Rent Start Date: {{ booking.rent_start_date }}</li>
+                        <li class="list-group-item">Rent End Date: {{booking.rent_end_date}}</li>
+                    </ul>
+                    <div class="card-body">
+
+                        <a href="#" class="card-link btn btn-dark">Cancel Booking</a>
+
+                    </div>
+                </div>
+            </div>
+
+            {%else%}
+            <p>
+                Currently there are no bookings for this rental.
+            </p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -88,24 +88,29 @@
                 <a href="{% url 'update-rental' rental.id %}" class="filter-btn">Update Details</a>
                 <a href="{% url 'list-rental-images' rental.id %}" class="filter-btn">Update Images</a>
                 {% else %}
-
-                {% if booked_by_user %}
+                {% if booking %}
+                {% if booking.status == 'PENDING' or booking.status == 'CONFIRMED' %}
                 <form action="{% url 'cancel-booking' rental.id %}" method="post">
                     {% csrf_token %}
                     <input type="submit" class="filter-btn" value="Cancel Booking">
                 </form>
-
-                {% else%}
-                <form action="{% url 'book-rental' rental.id %}" method="post">
+                {% elif booking.status == 'CANCELLED' %}
+                <form action="{% url 'update-booking' rental.id %}" method="GET">
+                    <input type="submit" class="filter-btn" value="Update Booking">
+                </form>
+                {% endif %}
+                {% else %}
+                <form action="{% url 'book-rental' rental.id %}" method="GET">
                     {% csrf_token %}
                     <input type="submit" class="filter-btn" value="Book Now">
 
                 </form>
+
                 {% endif %}
+
                 {% if favorated_by_user %}
                 <a href="{% url 'remove-favorite' rental.id %}" class="filter-btn">Remove from Favorite</a>
 
-                <!-- <input type="submit" class="filter-btn" value="Add to Favourite"> -->
                 {% else %}
                 <a href="{% url 'add-favorite' rental.id %}" class="filter-btn">Add to Favorite</a>
 

@@ -293,6 +293,11 @@ async function renderRental(event) {
         anchor.className = 'filter-btn'
         anchor.innerHTML = 'View'
         anchor.href = `/rental_detail/${rental.id}/`
+
+        const anchor2 = document.createElement('a');
+        anchor2.className = 'btn btn-dark'
+        anchor2.textContent = 'Bookings'
+        anchor2.href = `/bookings/`
         // Append the card title and texts to the card body
         cardBodyDiv.appendChild(cardTitle);
         cardBodyDiv.appendChild(cardText1);
@@ -300,6 +305,8 @@ async function renderRental(event) {
         cardBodyDiv.appendChild(cardText4);
         cardBodyDiv.appendChild(cardText3);
         cardBodyDiv.appendChild(anchor)
+        cardBodyDiv.appendChild(anchor2)
+
 
         // Append the card body to the right column
         colRight.appendChild(cardBodyDiv);

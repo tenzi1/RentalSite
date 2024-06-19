@@ -251,37 +251,48 @@ async function renderRental(event) {
         cardText4.className = 'card-text';
         cardText4.innerHTML = `<b>Rental Price</b> :  Rs. ${rental.monthly_rent}`;
 
-
         const anchor = document.createElement('a');
-        anchor.className = 'filter-btn'
+        anchor.className = 'btn btn-dark me-1'
         anchor.innerHTML = 'View'
         anchor.href = `/rental_detail/${rental.id}/`
-
 
         // Append the card title and texts to the card body
         cardBodyDiv.appendChild(cardTitle);
         cardBodyDiv.appendChild(cardText1);
         cardBodyDiv.appendChild(cardText2);
         cardBodyDiv.appendChild(cardText4);
-        if (rental.status) {
-            cardText5 = document.createElement('p');
-            cardText5.className = 'card-text';
-            cardText5.innerHTML = `<b>Booking Status</b> : <strong>${rental.status}</strong>`
-            cardBodyDiv.appendChild(cardText5)
-        }
+        // if (rental.status) {
+        //     cardText5 = document.createElement('p');
+        //     cardText5.className = 'card-text';
+        //     cardText5.innerHTML = `<b>Booking Status</b> : <strong class="badge bg-dark">${rental.status}</strong>`
+        //     cardBodyDiv.appendChild(cardText5)
+        // }
         cardBodyDiv.appendChild(cardText3);
 
         cardBodyDiv.appendChild(anchor)
-        // if (rental.status) {
-        //     const statusBtn = document.createElement('a');
-        //     statusBtn.className = 'filter-btn'
-        //     statusBtn.innerHTML = "Cancel Booking"
-        //     // statusBtn.href = `/rental_detail/${rental.id}/`
-        //     cardBodyDiv.appendChild(statusBtn)
+        // cardBodyDiv.appendChild(anchor2)
 
+        const headerChild = document.querySelector('.main-header .active')
+        if (headerChild.classList.contains('featured-rental')) {
+            // filterData['featured'] = true
+        } else if (headerChild.classList.contains('owned-rental')) {
+            const anchor2 = document.createElement('a');
+            anchor2.className = 'btn btn-dark'
+            anchor2.textContent = 'Bookings'
+            anchor2.href = `/bookings/${rental.id}/`
 
+            cardBodyDiv.appendChild(anchor2)
 
-        // }
+        } else if (headerChild.classList.contains('favorite')) {
+            // filterData['favorite'] = true
+        } else if (headerChild.classList.contains('booked-rental')) {
+            const anchor2 = document.createElement('a');
+            anchor2.className = 'btn btn-dark'
+            anchor2.textContent = 'Bookings'
+            anchor2.href = `/booking/${rental.id}/`
+
+            cardBodyDiv.appendChild(anchor2)
+        }
 
         // Append the card body to the right column
         colRight.appendChild(cardBodyDiv);

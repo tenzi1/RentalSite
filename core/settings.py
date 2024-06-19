@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS").split(",")]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -94,7 +95,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "core.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -245,3 +245,10 @@ if DEBUG:
             },
         },
     }
+
+ASGI_APPLICATION = "core.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}
