@@ -181,6 +181,7 @@ class Booking(IsDeleted):
         ("PENDING", "pending"),
         ("CONFIRMED", "confirmed"),
         ("CANCELLED", "cancelled"),
+        ("REJECTED", "rejected"),
     )
     rental = models.ForeignKey(Rental, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

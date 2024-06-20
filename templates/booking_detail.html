@@ -41,8 +41,38 @@ Booking List
                         <li class="list-group-item">Rent End Date: {{booking.rent_end_date}}</li>
                     </ul>
                     <div class="card-body">
+                        {% if booking.status == 'REJECTED' %}
+                        <form action="{% url 'remove-booking' %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                            <input type="submit" value="Remove" class="btn btn-dark">
+                        </form>
 
-                        <a href="#" class="card-link btn btn-dark">Cancel Booking</a>
+                        {% elif booking.status == 'CANCELLED' %}
+                        <form action="{% url 'update-booking' booking.rental.id %}" class="d-inline-block" method="GET">
+                            <input type="submit" class="btn btn-dark" value="Update Booking">
+                        </form>
+                        <form action="{% url 'remove-booking' %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                            <input type="submit" value="Remove" class="btn btn-dark">
+                        </form>
+                        {% else %}
+                        <form action="{% url 'update-booking' booking.rental.id %}" class="d-inline-block" method="GET">
+                            <input type="submit" class="btn btn-dark" value="Update Booking">
+                        </form>
+                        <form action="{% url 'cancel-booking' booking.rental.id %}" class="d-inline-block"
+                            method="post">
+                            {% csrf_token %}
+                            <input type="submit" class="btn btn-dark" value="Cancel Booking">
+                        </form>
+                        <!-- <form action="{% url 'remove-booking' %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                            <input type="submit" value="Remove" class="btn btn-dark">
+                        </form> -->
+
+                        {% endif %}
 
                     </div>
                 </div>

@@ -45,8 +45,16 @@ Booking List
                     </ul>
                     <div class="card-body">
                         {% if request.user == booking.rental.owner.user %}
-                        <a href="#" class="card-link btn btn-dark">Confirm</a>
-                        <a href="#" class="card-link btn btn-dark">Reject</a>
+                        <form action="{% url 'confirm-booking' %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="booking_id" value="{{ booking.id}}">
+                            <input type="submit" class=" card-text btn btn-dark" value="Confirm">
+                        </form>
+                        <form action="{% url 'reject-booking' %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="booking_id" value="{{ booking.id}}">
+                            <input type="submit" class=" card-text btn btn-dark" value="Reject">
+                        </form>
                         {% else %}
                         <a href="#" class="card-link btn btn-dark">Cancel Booking</a>
 

@@ -15,6 +15,9 @@ from .views import (
     book_rental,
     cancel_booking,
     update_booking,
+    confirm_booking,
+    reject_booking,
+    remove_booking,
 )
 
 urlpatterns = [
@@ -50,4 +53,7 @@ urlpatterns = [
     path(
         "booking/<int:rental_id>/", BookingDetailView.as_view(), name="booking-detail"
     ),
+    path("confirm_booking/", confirm_booking, name="confirm-booking"),
+    path("reject_booking/", reject_booking, name="reject-booking"),
+    path("remove_booking/", remove_booking, name="remove-booking"),
 ]

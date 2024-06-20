@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import user_passes_test, login_required
+from django.db import transaction
 from django.core.exceptions import PermissionDenied
 from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
@@ -260,6 +261,11 @@ def update_booking(request, rental_id):
             booking = form.save(commit=False)
             booking.status = "PENDING"
             booking.save()
+
+            message = (
+                f"Booking: {request.user} has updated booking of rengal {rental_id}"
+            )
+            create_rental_notification(to_user=booking.user, message=message)
             return HttpResponseRedirect(reverse("home"))
     else:
         raise PermissionDenied("Invalid request method.")
@@ -300,3 +306,68 @@ class BookingDetailView(LoginRequiredMixin, generic.DetailView):
             )
         except Booking.DoesNotExist:
             return HttpResponse("Booking Not found for given rental", 400)
+
+
+@login_required
+def confirm_booking(request):
+    """confirmation of booking and rejection of other bookings for particular rental instance."""
+    if request.method == "POST":
+        booking_id = request.POST.get("booking_id", None)
+        if booking_id:
+            booking = get_object_or_404(Booking, pk=booking_id)
+            owner = booking.rental.owner.user
+            if request.user != owner:
+                raise PermissionDenied("Only Owner can confirm and reject booking.")
+            try:
+                with transaction.atomic():
+                    booking.status = "CONFIRMED"
+                    booking.save()
+                    booking.rental.available_for_rent = False
+                    booking.rental.save()
+                    booking.rental.booking_set.exclude(id=booking_id).update(
+                        status="REJECTED"
+                    )
+            except Exception as e:
+                raise PermissionDenied("Failed to update booking status.")
+
+            message = f"Booking: {request.user} has confirmed booking of rengal {booking.rental.id}"
+            create_rental_notification(to_user=booking.user, message=message)
+        return HttpResponseRedirect(reverse("bookings", args=[booking.rental_id]))
+    else:
+        raise PermissionDenied("Invalid request method.")
+
+
+@login_required
+def reject_booking(request):
+    """reject booking of particular rental instance"""
+    if request.method == "POST":
+        booking_id = request.POST.get("booking_id", None)
+        if booking_id:
+            booking = get_object_or_404(Booking, pk=booking_id)
+            owner = booking.rental.owner.user
+            if request.user != owner:
+                raise PermissionDenied("Only Owner can reject booking.")
+            booking.status = "REJECTED"
+            booking.save()
+            if not booking.rental.booking_set.filter(status="CONFIRMED").exists():
+                booking.rental.available_for_rent = True
+                booking.rental.save()
+
+            message = f"Booking: {request.user} has confirmed booking of rengal {booking.rental.id}"
+            create_rental_notification(to_user=booking.user, message=message)
+        return HttpResponseRedirect(reverse("bookings", args=[booking.rental_id]))
+    else:
+        raise PermissionDenied("Invalid request method.")
+
+
+@login_required
+def remove_booking(request):
+    """remove booking of particular rental instance"""
+    if request.method == "POST":
+        booking_id = request.POST.get("booking_id", None)
+        if booking_id:
+            booking = get_object_or_404(Booking, pk=booking_id)
+            booking.delete()
+        return HttpResponseRedirect(reverse("booking-detail", args=[booking.rental_id]))
+    else:
+        raise PermissionDenied("Invalid request method.")

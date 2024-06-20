@@ -90,29 +90,41 @@
                 {% else %}
                 {% if booking %}
                 {% if booking.status == 'PENDING' or booking.status == 'CONFIRMED' %}
-                <form action="{% url 'cancel-booking' rental.id %}" method="post">
+                <form action="{% url 'cancel-booking' rental.id %}" class="d-inline-block" method="post">
                     {% csrf_token %}
-                    <input type="submit" class="filter-btn" value="Cancel Booking">
+                    <input type="submit" class="btn btn-dark" value="Cancel Booking">
                 </form>
+                <form action="{% url 'update-booking' rental.id %}" class="d-inline-block" method="GET">
+                    <input type="submit" class="btn btn-dark" value="Update Booking">
+                </form>
+
                 {% elif booking.status == 'CANCELLED' %}
-                <form action="{% url 'update-booking' rental.id %}" method="GET">
-                    <input type="submit" class="filter-btn" value="Update Booking">
+                <form action="{% url 'update-booking' rental.id %}" class="d-inline-block" method="GET">
+                    <input type="submit" class="btn btn-dark" value="Update Booking">
                 </form>
+                {% else %}
+                <form action="{% url 'remove-booking' %}" method="post" class="d-inline-block">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <input type="submit" value="Remove" class="btn btn-dark">
+                </form>
+
+
                 {% endif %}
                 {% else %}
-                <form action="{% url 'book-rental' rental.id %}" method="GET">
+                <form action="{% url 'book-rental' rental.id %}" class="d-inline-block" method="GET">
                     {% csrf_token %}
-                    <input type="submit" class="filter-btn" value="Book Now">
+                    <input type="submit" class="btn btn-dark" value="Book Now">
 
                 </form>
 
                 {% endif %}
 
                 {% if favorated_by_user %}
-                <a href="{% url 'remove-favorite' rental.id %}" class="filter-btn">Remove from Favorite</a>
+                <a href="{% url 'remove-favorite' rental.id %}" class="btn btn-dark">Remove from Favorite</a>
 
                 {% else %}
-                <a href="{% url 'add-favorite' rental.id %}" class="filter-btn">Add to Favorite</a>
+                <a href="{% url 'add-favorite' rental.id %}" class="btn btn-dark">Add to Favorite</a>
 
                 {% endif %}
                 {% endif %}
