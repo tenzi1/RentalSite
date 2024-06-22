@@ -30,3 +30,6 @@ class UserProfile(models.Model):
 
     objects = models.Manager()
     active = ActiveManager()
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
