@@ -18,7 +18,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         count = await self.get_unread_notification_count()
-        await self.send(text_data=json.dumps({"message": count}))
+        await self.send(text_data=json.dumps({"count": count}))
         # count = Notification.objects.count()
         # await self.send(text_data=json.dumps({"message": f"{count}"}))
 
@@ -27,8 +27,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         return await super().disconnect(code)
 
     async def send_notification(self, event):
-        await self.send(text_data=json.dumps({"message": event["message"]}))
+        print("&*******************************************")
+        await self.send(text_data=json.dumps({"count": event["count"]}))
 
     @database_sync_to_async
     def get_unread_notification_count(self):
-        return Notification.objects.count()
+        return Notification.objects.filter(read=False, user=self.scope["user"]).count()

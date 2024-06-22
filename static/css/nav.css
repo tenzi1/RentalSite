@@ -125,40 +125,12 @@
     border-radius: 5px;
 }
 
-.notification-container {
-    position: absolute;
-    width: 350px;
-    right: 0;
-    top: 40px;
-    background-color: white;
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, .5);
-    color: #333;
-    /* background-color: hsl(0, 0%, 20%); */
-    border-radius: 5px;
-}
-
-/* .notification-container::before {
-    position: absolute;
-    content: "";
-    border-width: 8px;
-    border-style: solid;
-    border-color: transparent transparent white;
-    transform: rotate(45deg);
-bottom: 100%;
-right: 1px;
-margin-left: -6px;
-}
-
-*/
 @media screen and (max-width: 991px) {
     .login-signup-divider {
         display: none;
     }
 
-    .notification {
-        display: inline-block;
-        margin: 10px 15px;
-    }
+
 }
 
 /* 

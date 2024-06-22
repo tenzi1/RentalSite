@@ -1,5 +1,5 @@
-document.querySelector('.notification').onclick = function (e) {
-    notificationContainer = document.querySelector('.notification-container')
+document.querySelector('.notification-container').onclick = function (e) {
+    notificationContainer = document.querySelector('.notifications-popup')
     notificationContainer.classList.toggle('visually-hidden')
 }
 
@@ -21,13 +21,18 @@ notifySocket.onclose = function (e) {
 
 notifySocket.onmessage = function (e) {
     const data = JSON.parse(e.data);
-    const message = data.message;
-    setMessage(message);
+    const count = data.count;
+    setCount(count);
 }
 
-function setMessage(message) {
-    console.log('message')
-    console.log(message)
-    count = document.querySelector('.badge').value
-    console.log(count)
+function setCount(count) {
+    console.log('count===>', count)
+    badge = document.querySelector('.notification-container .badge')
+
+    if (count > 0) {
+        badge.textContent = count
+        badge.classList.remove('visually-hidden')
+    } else {
+        badge.classList.add('visually-hidden')
+    }
 }

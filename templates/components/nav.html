@@ -1,67 +1,261 @@
 {% load static %}
 {% block nav%}
 <link rel="stylesheet" href="{% static 'css/nav.css' %}">
+
+<style>
+    .notifications-popup {
+        position: absolute;
+        top: 40px;
+        right: 0;
+        width: 320px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        padding: 10px;
+        z-index: 1000;
+        color: #333;
+    }
+
+    .notify-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    .notify-header h2 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .mark-read {
+        background: none;
+        border: none;
+        color: #007bff;
+        cursor: pointer;
+    }
+
+    .notifications {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .notification {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .notification.earlier {
+        background-color: #f9f9f9;
+    }
+
+    .notification .time {
+        font-size: 12px;
+        color: #555;
+    }
+
+    .notification .content {
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    .reply {
+        background: none;
+        border: 1px solid #007bff;
+        color: #007bff;
+        cursor: pointer;
+        padding: 5px;
+        font-size: 12px;
+        margin-top: 10px;
+    }
+
+    .footer {
+        text-align: center;
+        padding: 10px 0;
+    }
+
+    .see-all {
+        background: none;
+        border: none;
+        color: #007bff;
+        cursor: pointer;
+    }
+
+    /* @media screen and (max-width: 991px) {
+        .notifications-popup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 320px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            padding: 10px;
+            z-index: 1000;
+        }
+    } */
+
+    .first-menu {
+        display: flex;
+        align-items: center;
+    }
+
+    .right-menu {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-self: flex-start;
+        height: 64px;
+        padding: 10px 15px;
+    }
+
+    .notification-container {
+        margin-right: 16px;
+    }
+</style>
 <header class="header sticky-top">
     <div class="container nav-container">
-        <nav class="nav navbar navbar-expand-lg">
-            <a href="{% url 'home' %}" class="brand-name">Easy Rental</a>
+
+        <nav class="nav">
+            <div class="first-menu navbar navbar-expand-lg">
+
+                <a href="{% url 'home' %}" class="brand-name">Easy Rental</a>
 
 
-            <div class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fa fa-bars" aria-hidden="true"></i>
+                <div class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa fa-bars" aria-hidden="true"></i>
+                </div>
+
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <div class="search-container">
+                        <form action="" method="get" class="form-flex" id="search-form">
+                            <input type="text" placeholder="Search for room..." name="search" class="search-input">
+                            <i class="fa fa-search search-icon"></i>
+                        </form>
+                    </div>
+                    <a href="{% url 'create-rental'%}" class="nav-link"><i class="fa fa-plus-square"
+                            aria-hidden="true"></i>
+                        Add Rental</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'profile' request.user.id %}" class="nav-link">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                        Profile</a>
+                    <a href="{% url 'account_logout' %}" class="nav-link">
+                        <i class="fa fa-sign-out" aria-hidden="true"></i>
+                        Log Out</a>
+                    {% else %}
+                    <a href="{% url 'account_login' %}" class="nav-link">
+                        <i class="fa fa-sign-in" aria-hidden="true"></i> Login
+                    </a>
+                    <div class="login-signup-divider"></div>
+                    <a href="{% url 'account_signup' %}" class="nav-link">
+                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                        Sign Up</a>
+                    {% endif %}
+
+                    <!-- <div class="notification-container position-relative">
+                        <i class="fa fa-bell" aria-hidden="true" id="bell" data-count="0"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            0
+                        </span>
+                        <div class="notifications-popup visually-hidden">
+                            <div class="notify-header">
+                                <h2>Notifications</h2>
+                                <button class="mark-read">Mark all as read</button>
+                            </div>
+                            <div class="notifications">
+                                <div class="notification">
+                                    <div class="time">Now in django • 54m</div>
+                                    <div class="content">Django Rest Framework is CSRF token needed to protect login
+                                        page
+                                    </div>
+                                </div>
+                                <div class="notification">
+                                    <div class="time">djangolearning • 1h</div>
+                                    <div class="content">Guidance or advice from fellow devs!</div>
+                                </div>
+                                <div class="notification">
+                                    <div class="time">u/SquareCreme9098 replied to your comment in r/django • May 12
+                                    </div>
+                                    <div class="content">Yes, it does. I've made some progress, ended up just manually
+                                        setting the attribute
+                                        of
+                                        the form...</div>
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <button class="see-all">See All</button>
+                            </div>
+                        </div>
+
+                    </div> -->
+
+
+                </div>
             </div>
 
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-                <div class="search-container">
-                    <form action="" method="get" class="form-flex" id="search-form">
-                        <input type="text" placeholder="Search for room..." name="search" class="search-input">
-                        <i class="fa fa-search search-icon"></i>
-                    </form>
-                </div>
-                <a href="{% url 'create-rental'%}" class="nav-link"><i class="fa fa-plus-square" aria-hidden="true"></i>
-                    Add Rental</a>
-                {% if user.is_authenticated %}
-                <a href="{% url 'profile' request.user.id %}" class="nav-link">
-                    <i class="fa fa-user" aria-hidden="true"></i>
-                    Profile</a>
-                <a href="{% url 'account_logout' %}" class="nav-link">
-                    <i class="fa fa-sign-out" aria-hidden="true"></i>
-                    Log Out</a>
-                {% else %}
-                <a href="{% url 'account_login' %}" class="nav-link">
-                    <i class="fa fa-sign-in" aria-hidden="true"></i> Login
-                </a>
-                <div class="login-signup-divider"></div>
-                <a href="{% url 'account_signup' %}" class="nav-link">
-                    <i class="fa fa-user-plus" aria-hidden="true"></i>
-                    Sign Up</a>
-                {% endif %}
-
-                <div class="notification position-relative">
+            <div class="right-menu">
+                <div class="notification-container position-relative">
                     <i class="fa fa-bell" aria-hidden="true" id="bell" data-count="0"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger visually-hidden">
                         0
                     </span>
-                    <!-- <div class="notification-container visually-hidden">
-                        <ul>
-                            <li>user2 has boooked rental 1.</li>
-                            <li>user2 has boooked rental 1.</li>
+                    <div class="notifications-popup visually-hidden">
+                        <div class="notify-header">
+                            <h2>Notifications</h2>
+                            <button class="mark-read">Mark all as read</button>
+                        </div>
+                        <div class="notifications">
+                            <div class="notification">
+                                <div class="time">Now in django • 54m</div>
+                                <div class="content">Django Rest Framework is CSRF token needed to protect login
+                                    page
+                                </div>
+                            </div>
+                            <div class="notification">
+                                <div class="time">djangolearning • 1h</div>
+                                <div class="content">Guidance or advice from fellow devs!</div>
+                            </div>
+                            <div class="notification">
+                                <div class="time">u/SquareCreme9098 replied to your comment in r/django • May 12
+                                </div>
+                                <div class="content">Yes, it does. I've made some progress, ended up just manually
+                                    setting the attribute
+                                    of
+                                    the form...</div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <button class="see-all">See All</button>
+                        </div>
+                    </div>
 
-                        </ul>
-                    </div> -->
+                </div>
+                <div class="message-container">
+                    <i class="fa fa-comments" aria-hidden="true"></i>
+
                 </div>
 
-
             </div>
-
 
 
         </nav>
+
+
     </div>
+
 </header>
+
+
 
 <script src="{% static 'js/nav.js' %}">
 
