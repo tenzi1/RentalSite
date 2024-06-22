@@ -1,30 +1,247 @@
 {% extends '_base.html' %}
-
+{% load static %}
 {% block title%} Home {% endblock %}
 
 {% block content %}
-{% if messages %}
-{% for message in messages %}
-<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-    {{ message}}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<style>
+    @media screen and (min-width:1024px) {
+
+        #show__sidebar-btn,
+        #hide__sidebar-btn {
+            display: none;
+        }
+
+        .form-filter {
+            max-height: 100vh;
+            overflow-y: scroll;
+        }
+
+
+        .filter-header,
+        .main-header {
+            box-shadow: 0px 3px 2px -2px rgba(0, 0, 0, 0.3);
+            font-size: 16px;
+            position: sticky;
+            width: 100%;
+            top: 64px;
+            z-index: 20;
+            background-color: white;
+        }
+
+    }
+
+    @media screen and (max-width:1024px) {
+
+        .sidebar {
+            display: block;
+            max-width: 300px;
+            min-width: 300px;
+        }
+
+        .dashboard__container {
+            position: relative;
+            width: 100%;
+        }
+
+        aside {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 300px;
+            height: 100%;
+            background-color: white;
+            /* background-color: #333;
+            color: white; */
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            z-index: 40;
+        }
+
+        .dashboard__container .filter-header {
+            z-index: 1050;
+        }
+
+        .sidebar__toggle {
+            /* padding: 15px; */
+            display: block;
+            border: 1px solid grey;
+            border-radius: 5px;
+            background-color: white;
+        }
+
+        .cross-btn {
+            float: right;
+            padding: 6px;
+            font-size: 16px;
+        }
+
+
+
+
+
+    }
+
+    @media (min-width: 768px) {
+        .dashboard__container aside {
+            left: 0;
+        }
+
+        .dashboard__container button {
+            /* display: none; */
+        }
+    }
+</style>
+<div class="dashboard__container">
+
+</div>
+<div class=" container body-container">
+
+    <!--  -->
+    <aside class="sidebar">
+        <div class="filter-header">
+
+            <i class="fa fa-filter" aria-hidden="true">
+            </i>
+            <span class="header-text">Filter</span>
+
+            <button id="hide__sidebar-btn" class="sidebar__toggle cross-btn"><i class="fa fa-times"
+                    aria-hidden="true"></i></button>
+
+        </div>
+
+        <form class="filter-form" id="filter-form">
+            <div class="multipleSelection">
+                <div class="selectBox" onclick="showCheckboxes()">
+                    <select>
+                        <option><span class="filter-text">Category</span></option>
+                    </select>
+                    <i class="fa fa-chevron-down categoryDown" aria-hidden="true"></i>
+                    <i class="fa fa-chevron-up categoryUp" aria-hidden="true" style="display: none;"></i>
+
+                    <div class="overSelect"></div>
+                </div>
+
+                <div id="categories" class=" filter-content">
+
+                    <!-- <input type="checkbox" id="first" value="firsts" />
+                            <label for="first">
+                                checkBox1
+                            </label> -->
+
+                </div>
+            </div>
+
+            <div class="filter-separator"></div>
+
+
+            <div class="price-container">
+                <span class="filter-text">Monthly Rent</span>
+                <div class="price-input filter-content">
+                    <div class="field">
+                        <span>Min</span>
+                        <input type="number" class="input-min" value="5000">
+                    </div>
+                    <div class="separator">-</div>
+                    <div class="field">
+                        <span>Max</span>
+                        <input type="number" class="input-max" value="70000">
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-separator"></div>
+
+
+            <div class="location-container">
+                <span class="filter-text">Rental Location</span>
+                <div class="location-input filter-content">
+                    <input type="text" placeholder="Address">
+                </div>
+            </div>
+
+            <div class="filter-separator"></div>
+
+            <div class="filter-separator"></div>
+            <div class="multipleSelection">
+                <span class="filter-text">Sort By</span>
+                <select class="form-sort text-muted" aria-label="Default select example">
+                    <option selected class="text-muted" value="-date_added">Date Added (Recent to Old)</option>
+                    <option value="monthly_rent" class="text-muted">Monthly Rent (Low to High)</option>
+                    <option value="-monthly_rent" class="text-muted">Monthly Rent (High to Low)</option>
+                    <option value="date_added" class="text-muted">Date Added (Old to Recent)</option>
+                </select>
+            </div>
+
+            <div class="filter-separator"></div>
+
+            <input type="submit" class="filter-btn" value="Filter">
+            <input type="button" class="filter-btn reset-btn" value="Reset" onclick="resetFilter()">
+
+        </form>
+
+    </aside>
+
+    <main class="main">
+        <div class="main-header">
+
+            <button id="show__sidebar-btn" class="sidebar__toggle header-child"><i class="fa fa-filter"
+                    aria-hidden="true">
+                </i></button>
+            <div class="first active featured-rental header-child">
+                <i class="fa fa-cubes" aria-hidden="true"></i>
+                <span class="header-text">Featured Rentals</span>
+            </div>
+            <!-- <span class="divider"></span> -->
+            <div class="second latest-rental header-child">
+                <i class="fa fa-bolt" aria-hidden="true"></i>
+                <span class="header-text">Latest Rentals</span>
+            </div>
+
+            {% if request.user.is_authenticated %}
+            <div class="second favorite header-child">
+                <i class="fa fa-heart" aria-hidden="true"></i>
+                <span class="header-text">Favourites</span>
+            </div>
+
+            <div class="second owned-rental header-child">
+                <i class="fa fa-home" aria-hidden="true"></i>
+                <span class="header-text">Owned Rentals</span>
+            </div>
+
+            <div class="second booked-rental header-child">
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="header-text">Bookings</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="main-body p-3">
+
+
+        </div>
+    </main>
 </div>
 
-{% endfor %}
-{% endif %}
+<script src="{% static 'js/base.js' %}"></script>
+<script>
+    const sidebar = document.querySelector('aside');
+    const showSidebarBtn = document.querySelector('#show__sidebar-btn');
+    const hideSidebarBtn = document.querySelector('#hide__sidebar-btn');
 
+    const showSidebar = () => {
+        sidebar.style.left = '0';
+        // showSidebarBtn.style.display = 'none';
+        // hideSidebarBtn.style.display = 'inline-block';
+    }
 
-<h1>This is homepage..</h1>
-{% if user.is_authenticated %}
-<p>Hi {{user.email}}</p>
-<form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-warning">Log Out</button>
-</form>
+    const hideSidebar = () => {
+        sidebar.style.left = '-100%';
+        showSidebarBtn.classList.remove('active')
+        // showSidebarBtn.style.display = 'inline-block';
+        // hideSidebarBtn.style.display = 'none';
+    }
 
-{% else %}
-<p>You are currenlty not logged in. To access full feature you can <a href="{% url 'login' %}">Log In</a>.
-    <a href="{% url 'signup' %}">Don't have account?</a>
-</p>
-{% endif %}
+    showSidebarBtn.addEventListener('click', showSidebar);
+    hideSidebarBtn.addEventListener('click', hideSidebar);
+</script>
 {% endblock %}

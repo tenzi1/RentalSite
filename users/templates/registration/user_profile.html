@@ -1,22 +1,78 @@
 {% extends '_base.html' %}
-{% load crispy_forms_tags %}
-
+{% load static %}
 {% block title %}
 User Profile
 {% endblock %}
 
 {% block content %}
-<div class="container border rounded shadow mt-3 py-3">
-    <h2 class="text-center">User Profile</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form action="" method="post">
-                {{ request.user}}
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button class="btn btn-info">Create Profile</button>
-            </form>
+
+<style>
+    .wrapper {
+        background-color: white;
+        height: 100vh;
+    }
+
+    .profile {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+    }
+</style>
+<div class="container">
+    <div class="wrapper">
+        <div class="row g-3">
+            <h1 class="p-3 text-center">User Profile</h1>
+
+            <div class=" profile">
+                <div class="img-container text-center">
+                    {% if profile.image %}
+                    <img src="{{ profile.image.url}}" alt="Profile Image" class="img-thumbnail mb-3"
+                        style="max-width: 200px;">
+                    {% else %}
+                    <img src="{% static 'images/profile.png' %}" alt="Profile Image" class="img-thumbnail mb-3"
+                        style="max-width: 200px;">
+                    {% endif %}
+                    <h5 class="card-title">{{ request.user.username}}</h5>
+
+                </div>
+                <div class="profile-content">
+                    <p> <strong>First Name:</strong> {{ profile.first_name }}</p>
+                    <p><strong>Last Name:</strong> {{ profile.last_name }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ profile.email }}</p>
+                    <p class="card-text"><strong>Phone:</strong> {{ profile.phone }}</p>
+
+                    <p class="card-text"><small class="text-muted">Date Created: {{ profile.date_created }}</small>
+                    </p>
+                    <p class="card-text"><small class="text-muted">Last Modified: {{ profile.date_modified }}</small>
+                    </p>
+                </div>
+                <div class="mt-3">
+                    <a href="{% url 'update-userprofile' %}" class="filter-btn">Update Profile</a>
+                    <a href="{% url 'account_change_password'%}" class="filter-btn">Change Password</a>
+                    <a href="{% url 'home' %}" class="filter-btn">Home</a>
+
+                </div>
+
+            </div>
+            <!-- <div class="col-md-6">
+                <h5 class="card-title">{{ userprofile.first_name }} {{ userprofile.last_name }}</h5>
+                <p class="card-text">Email: {{ userprofile.email }}</p>
+                <p class="card-text">Phone: {{ userprofile.phone }}</p>
+                <p class="card-text">Role: {{ userprofile.role }}</p>
+                <img src="{{ userprofile.image.url }}" alt="Profile Image" class="img-thumbnail mb-3"
+                    style="max-width: 200px;">
+                <p class="card-text"><small class="text-muted">Date Created: {{ userprofile.date_created }}</small></p>
+                <p class="card-text"><small class="text-muted">Last Modified: {{ userprofile.date_modified }}</small>
+                </p>
+            </div> -->
+            <div class="col-md-8">
+
+            </div>
         </div>
     </div>
+
 </div>
+
 {% endblock %}

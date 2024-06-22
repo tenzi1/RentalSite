@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # from django.contrib.gis.db import models as geo_models
 from core.utils.managers import ActiveManager
@@ -141,10 +142,11 @@ class Rental(IsDeleted):
     available_for_rent = models.BooleanField(default=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
-    rent_start_date = models.DateField(
-        help_text="Rent Start Date", null=True, blank=True
-    )
-    rent_end_date = models.DateField(help_text="Rent End Date", null=True, blank=True)
+    # rent_start_date = models.DateField(
+    #     help_text="Rent Start Date", null=True, blank=True
+    # )
+    # rent_end_date = models.DateField(help_text="Rent End Date", null=True, blank=True)
+    is_featured = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -158,4 +160,46 @@ class RentalImage(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        if self.name:
+            return self.name
+        return " "
+
+    @property
+    def image_url(self):
+        return f"{self.image.url}"
+
+
+class Favorite(models.Model):
+    """To implement favorite feature."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rental = models.ForeignKey(Rental, on_delete=models.CASCADE)
+
+
+class Booking(IsDeleted):
+    RENTAL_STATUS_CHOICES = (
+        ("PENDING", "pending"),
+        ("CONFIRMED", "confirmed"),
+        ("CANCELLED", "cancelled"),
+        ("REJECTED", "rejected"),
+    )
+    rental = models.ForeignKey(Rental, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    booking_date = models.DateTimeField(auto_now_add=True)
+    rent_start_date = models.DateField()
+    rent_end_date = models.DateField()
+    status = models.CharField(
+        max_length=20, choices=RENTAL_STATUS_CHOICES, default="PENDING"
+    )
+
+
+class Notification(models.Model):
+    message = models.CharField(max_length=200)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.message

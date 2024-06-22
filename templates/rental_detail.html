@@ -1,0 +1,149 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+    body {
+        overflow: auto;
+    }
+
+    .wrapper {
+        background-color: white;
+        margin-bottom: 30px;
+        /* min-height: 90vh;
+        max-height: fit-content; */
+    }
+
+    #mapid {
+        height: 400px;
+        width: 100%;
+        z-index: 0;
+    }
+</style>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<div class="container">
+    <div class="wrapper row">
+        <h1 class="text-center my-3">{{ rental.title }}</h1>
+
+        <div class="col-md-5">
+            <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in rental.rental_images.all %}
+
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ image.image_url}}" class="d-block w-100" alt="...">
+                    </div>
+                    {% endfor %}
+
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            <div class="location-container my-3">
+                <p><strong>Address:</strong> {{ rental.location.address }}</p>
+                <p><strong>Rental Location:</strong></p>
+                <div id="mapid"></div>
+
+            </div>
+        </div>
+        <div class="rental-detail col-md-6">
+            <p><strong>Owner:</strong> {{ rental.owner.first_name }}</p>
+            <p><strong>Category:</strong> {{ rental.category.name }}</p>
+            <p><strong>Description:</strong> {{ rental.description }}</p>
+            <p><strong>Number of Rooms:</strong> {{ rental.num_bedrooms }}</p>
+            <p><strong>Number of Bathroom:</strong> {{ rental.num_bathrooms }}</p>
+            {% if rental.is_bathroom_shared %}
+            <p><strong>Bathroom (Shared | Private):</strong> Shared</p>
+            {% else %}
+            <p><strong>Bathroom (Shared | Private):</strong> Private</p>
+            {% endif %}
+            {% if rental.has_attached_bathroom %}
+            <p><strong>Bathroom (Attached | Detached):</strong> Attached</p>
+            {% else %}
+            <p><strong>Bathroom (Attached | Detached):</strong> Detached</p>
+            {% endif %}
+            {% if rental.is_kitchen_shared %}
+            <p><strong>Kitchen:</strong> Shared</p>
+            {% else %}
+            <p><strong>Kitchen:</strong> Private</p>
+            {% endif %}
+            <p><strong>Square Footage:</strong> {{ rental.square_footage }}</p>
+            <p><strong>Monthly Rent:</strong> Rs {{ rental.monthly_rent }}</p>
+            <p><strong>Available:</strong> {{ rental.available_for_rent }}</p>
+            <p><strong>Featured:</strong> {{ rental.is_featured }}</p>
+
+            <div>
+
+                {% if request.user == rental.owner.user%}
+                <a href="{% url 'update-rental' rental.id %}" class="filter-btn">Update Details</a>
+                <a href="{% url 'list-rental-images' rental.id %}" class="filter-btn">Update Images</a>
+                {% else %}
+                {% if booking %}
+                {% if booking.status == 'PENDING' or booking.status == 'CONFIRMED' %}
+                <form action="{% url 'cancel-booking' rental.id %}" class="d-inline-block" method="post">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-dark" value="Cancel Booking">
+                </form>
+                <form action="{% url 'update-booking' rental.id %}" class="d-inline-block" method="GET">
+                    <input type="submit" class="btn btn-dark" value="Update Booking">
+                </form>
+
+                {% elif booking.status == 'CANCELLED' %}
+                <form action="{% url 'update-booking' rental.id %}" class="d-inline-block" method="GET">
+                    <input type="submit" class="btn btn-dark" value="Update Booking">
+                </form>
+                {% else %}
+                <form action="{% url 'remove-booking' %}" method="post" class="d-inline-block">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <input type="submit" value="Remove" class="btn btn-dark">
+                </form>
+
+
+                {% endif %}
+                {% else %}
+                <form action="{% url 'book-rental' rental.id %}" class="d-inline-block" method="GET">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-dark" value="Book Now">
+
+                </form>
+
+                {% endif %}
+
+                {% if favorated_by_user %}
+                <a href="{% url 'remove-favorite' rental.id %}" class="btn btn-dark">Remove from Favorite</a>
+
+                {% else %}
+                <a href="{% url 'add-favorite' rental.id %}" class="btn btn-dark">Add to Favorite</a>
+
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let lat = "{{ rental.location.latitude }}"
+    let lng = "{{ rental.location.longitude}}"
+
+    var map = L.map('mapid').setView([lat, lng], 13); // Default location
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    map.setZoom(19)
+    map.flyTo([lat, lng])
+    L.marker([lat, lng]).addTo(map)
+</script>
+
+{% endblock %}

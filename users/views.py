@@ -8,40 +8,58 @@ from .forms import CustomUserCreationForm, CreateUserProfileForm
 from .models import UserProfile
 
 
+User = get_user_model()
+
+
 class SignupPageView(generic.CreateView):
+    """
+    Returns User creation form. upon successfull redirects to login page.
+    """
+
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
 
 
-class ProfilePageView(generic.CreateView):
-    form_class = CreateUserProfileForm
-    success_url = reverse_lazy("home")
-    template_name = "registration/user_profile.html"
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form"] = self.get_form()
-        return context
+def profile_view(request, user_id=None):
+    """
+    Returns user profile informations.
+    """
+    if user_id:
+        user = get_object_or_404(User, pk=user_id)
+        profile = user.profile
+    else:
+        profile = request.user.profile
+    return render(request, "registration/user_profile.html", {"profile": profile})
 
 
 def update_profile(request):
+    """
+    Return form with prepopulated user info. Used for profile information update.
+    """
     if request.method == "GET":
         form = CreateUserProfileForm(instance=request.user.profile)
-        return render(request, "registration/user_profile.html", {"form": form})
+        return render(request, "registration/profile_update.html", {"form": form})
 
     elif request.method == "POST":
         form = CreateUserProfileForm(
-            request.POST, request.FILES, instance=request.user.profile
+            data=request.POST, files=request.FILES, instance=request.user.profile
         )
         if form.is_valid():
+            print("=====>")
+            print(form.cleaned_data)
+            print("post", request.POST)
+            print("files", request.FILES)
             form.save()
             messages.success(request, "Your profile has been updated!")
-            return redirect("home")
+            return redirect("profile")
         else:
             form = CreateUserProfileForm(instance=request.user.profile)
-            return render(request, "registration/user_profile.html", {"form": form})
+            return render(request, "registration/profile_update.html", {"form": form})
+
+
+def confirm_logout(request):
+    """
+    Returns template with logout form.
+    """
+    return render(request, "account/logout.html")

@@ -28,4 +28,5 @@ class CreateUserProfileForm(forms.ModelForm):
         exclude = (
             "is_deleted",
             "user",
+            "role",
         )

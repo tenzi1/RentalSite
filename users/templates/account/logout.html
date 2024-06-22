@@ -1,0 +1,53 @@
+{% extends 'components/form.html' %}
+{% load allauth i18n %}
+{% block title %}
+{% trans "Sign Out" %}
+{% endblock %}
+{% block content %}
+<style>
+    /* Add Rental Css */
+    body {
+        overflow: auto;
+    }
+
+    .wrapper {
+        background-color: white;
+        /* height: 100vh; */
+
+    }
+
+    .rental-form {
+        margin: 30px auto;
+        padding-bottom: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        gap: 15px;
+    }
+
+
+
+    .submit-btn {
+        text-align: center;
+    }
+
+    .filter-btn {
+        margin: 0;
+    }
+</style>
+<div class="container">
+    <div class="wrapper">
+        <div class="row p-3">
+            <p class="lead">Are you sure you want to sign out?</p>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p}}
+                <button type="submit" class="filter-btn">Logout</button>
+                <a href="{% url 'home' %}" class="filter-btn">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,133 @@
+{% extends '_base.html' %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+<style>
+    body {
+        overflow: auto;
+    }
+
+    /* Add Rental Css */
+    .wrapper {
+        background-color: white;
+        height: 100vh;
+    }
+
+
+    .rental-form {
+        margin: 30px auto;
+        padding-bottom: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+    }
+
+    input[type="text"],
+    input[type="file"] {
+        display: inline-block;
+        /* width: 100%; */
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 1px solid #999;
+        -moz-appearance: 'textfield';
+    }
+
+    .submit-btn {
+        text-align: center;
+    }
+
+
+    .filter-btn {
+        margin: 0;
+    }
+
+    .btn-close {
+        margin-left: 10px;
+    }
+</style>
+<div class="container ">
+    <div class="wrapper">
+
+        <h1 class="text-center p-3">Upload Images for your Rental</h1>
+
+        <form method='post' class=" row g-3 needs-validation rental-form" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+
+            {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field }}
+            {% endfor %}
+            <div class="img-container row g-3" id="image-container">
+                {% for field in form.visible_fields %}
+                <div>
+                    {{ field.label_tag }}
+                    {% if form.is_bound %}
+                    {% if field.errors %}
+                    {% render_field field class="is-invalid"%}
+                    {% for error in field.errors %}
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    {% render_field field class="is-valid" %}
+                    {% endif %}
+                    {% else %}
+                    {% render_field field %}
+                    {% endif %}
+
+                    {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text}}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class=" row">
+
+            </div>
+            <div class="col-md-4 submit-btn">
+                <button type="button" class="filter-btn" onclick="addImageInput()">Another Image</button>
+
+                <input type="submit" class="filter-btn" value="Next">
+            </div>
+
+        </form>
+
+
+    </div>
+
+</div>
+<script>
+    function addImageInput() {
+        const container = document.getElementById('image-container');
+        let form_group = document.createElement('div')
+        form_group.classList.add('col-sm-12', 'col-md-6')
+
+
+
+        let input = document.createElement('input');
+        input.name = 'image'
+        input.type = 'file';
+        input.accept = 'image/*'; // Restrict to image files
+        input.id = 'image-input'; // Unique ID for each input
+        input.classList.add('col-10', 'col-sm-6')
+        let closeBtn = document.createElement('button');
+        closeBtn.classList.add('btn-close', 'col-sm-2', 'col-md-2');
+        // closeBtn.innerText = 'Remove';
+
+        closeBtn.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent the default action
+            container.removeChild(form_group); // Remove the form group from the container
+        });
+
+        form_group.appendChild(input)
+        form_group.appendChild(closeBtn)
+        container.appendChild(form_group);
+    }
+</script>
+
+{% endblock %}

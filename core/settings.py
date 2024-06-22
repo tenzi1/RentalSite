@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv(".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,8 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", False)
-
+DEBUG = os.environ.get("DEBUG", False) == "True"
 
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS").split(",")]
 
@@ -37,19 +36,32 @@ ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS").split(",")]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     # "django.contrib.gis",
-    # third party
-    "crispy_forms",
-    "crispy_bootstrap5",
     # local
     "users",
     "rentals",
+    # third party
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.facebook",
+    "django_filters",
+    "crispy_forms",
+    "crispy_bootstrap4",
+    "crispy_bootstrap5",
+    "rest_framework",
+    "drf_spectacular",
+    "debug_toolbar",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -58,7 +70,9 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -81,7 +95,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "core.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -143,9 +156,6 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
-
 # static file settings
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
@@ -153,7 +163,92 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Media file settings
 MEDIA_URL = "/media/"
-
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # CRISPY FORM SETTINGS
-CRISPY_ALLOWED_TEMPLATE_PACK = "bootstrap5"
-CRISPY_TEMPLATE_PACK = "bootstrap5"
+CRISPY_ALLOWED_TEMPLATE_PACK = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# Django allauth settings
+LOGIN_REDIRECT_URL = "home"
+ACCOUNT_LOGOUT_REDIRECT = "home"
+SITE_ID = 1
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+SITE_ID = 1
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+LOGIN_REDIRECT_URL = "/"
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+            "secret": os.getenv("GOOGLE_CLIENT_SECRET"),
+        }
+    }
+}
+
+# RESTFRAMEWORK settings
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Easy Rental Site API",
+    "DESCRIPTION": "Easy Rental is one stop rental site for both owner and renter.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
+}
+
+
+# DEBUG_TOOLBAR
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+
+if DEBUG:
+
+    LOGGING = {
+        # Use v1 of the logging config schema
+        "version": 1,
+        # Continue to use existing loggers
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+                "style": "{",
+            },
+        },
+        # Create a log handler that prints logs to the terminal
+        "handlers": {
+            "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
+        },
+        # Define the root logger's settings
+        "root": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+        "loggers": {
+            "django.db.backends": {
+                "level": "DEBUG",
+            },
+        },
+    }
+
+ASGI_APPLICATION = "core.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}

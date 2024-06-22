@@ -1,0 +1,29 @@
+{% load static %}
+{% block footer %}
+<link rel="stylesheet" href="{% static 'css/footer.css' %}">
+<footer>
+    <div class="footer-main">
+        <div class="footer-about">
+            <h3>About Us</h3>
+            <p>We offer a wide range of rental properties to suit every need.</p>
+        </div>
+        <div class="footer-services">
+            <h3>Our Services</h3>
+            <p>From short-term rentals to long-term leases, we've got you covered.</p>
+        </div>
+        <div class="footer-contact">
+            <h3>Contact Us</h3>
+            <p>Email: info@yourrentalsite.com | Phone: +1 (123) 456-7890</p>
+        </div>
+        <div class="footer-follow">
+            <h3>Follow Us</h3>
+            <p>Find us on:</p>
+            <ul>
+                <li><a href="#">Facebook</a></li>
+                <li><a href="#">Twitter</a></li>
+                <li><a href="#">Instagram</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
+{% endblock %}

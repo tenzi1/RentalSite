@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import (
+    Booking,
     Category,
     Rental,
     RentalImage,
@@ -8,6 +9,7 @@ from .models import (
     District,
     Country,
     Ward,
+    Notification,
 )
 
 # Register your models here.
@@ -52,6 +54,7 @@ class WardAdmin(admin.ModelAdmin):
     raw_id_fields = ["district"]
 
 
+admin.site.register(Booking)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(District, DistrictAdmin)
@@ -60,3 +63,4 @@ admin.site.register(Rental, RentalAdmin)
 admin.site.register(RentalImage, RentalImageAdmin)
 admin.site.register(RentalLocation, RentalLocationAdmin)
 admin.site.register(Ward, WardAdmin)
+admin.site.register(Notification)
