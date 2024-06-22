@@ -283,19 +283,24 @@ def update_booking(request, rental_id):
 class BookingListView(LoginRequiredMixin, generic.ListView):
     model = Booking
     template_name = "booking_list.html"
-
     context_object_name = "bookings"
 
     def get_queryset(self) -> QuerySet[reverse_lazy]:
         rental_id = self.kwargs["rental_id"]
         rental = get_object_or_404(Rental, id=rental_id)
-        if self.request.user == rental.owner.user:
-            return self.model.objects.select_related("user").filter(
-                rental=self.kwargs["rental_id"]
+        self.is_owner = self.request.user == rental.owner.user
+        if self.is_owner:
+            return self.model.objects.select_related("user", "rental").filter(
+                rental=rental
             )
-        return self.model.objects.select_related("user").filter(
+        return self.model.objects.select_related("user", "rental").filter(
             user=self.request.user, rental=rental
         )
+
+    def get_context_data(self, **kwargs: reverse_lazy):
+        context = super().get_context_data(**kwargs)
+        context["is_owner"] = self.is_owner
+        return context
 
 
 class BookingDetailView(LoginRequiredMixin, generic.DetailView):
