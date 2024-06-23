@@ -8,14 +8,15 @@ from api.viewsets.rental_viewsets import (
     RentalViewSet,
     AddRentalView,
     AddCategoryView,
+    NotificationViewSet,
     get_rent_range,
 )
-
-# from api.viewsets.rental_viewsets import CategoryViewSet
 
 router = routers.DefaultRouter()
 router.register(r"category", CategoryViewSet, basename="category")
 router.register(r"rental", RentalViewSet, basename="rental")
+router.register(r"notifications", NotificationViewSet, basename="notifications")
+
 urlpatterns = [
     path("", include(router.urls)),
     path("add_rental/", AddRentalView.as_view(), name="add-rental"),

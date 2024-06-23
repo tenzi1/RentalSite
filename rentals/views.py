@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from django.views.generic import TemplateView
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 from .forms import (
     CreateRentalForm,
@@ -213,18 +213,32 @@ def book_rental(request, rental_id):
     if request.method == "GET":
         form = BookingForm()
     elif request.method == "POST":
-        form = BookingForm(data=request.POST)
-        if form.is_valid():
-            booking = form.save(commit=False)
-            booking.rental = rental
-            booking.user = request.user
-            booking.status = "PENDING"
-            booking.save()
+        try:
+            with transaction.atomic():
+                existing_booking = Booking.objects.filter(
+                    rental=rental, user=request.user
+                ).exists()
+                if existing_booking:
+                    raise PermissionDenied("You have already booked this rental.")
 
-            message = f"Booking: {request.user} has booked your rental {rental_id}"
-            create_rental_notification(to_user=owner, message=message)
-            send_notification_count(to_user=owner)
-            return HttpResponseRedirect(reverse("home"))
+                form = BookingForm(data=request.POST)
+                if form.is_valid():
+                    booking = form.save(commit=False)
+                    booking.rental = rental
+                    booking.user = request.user
+                    booking.status = "PENDING"
+                    booking.save()
+
+                    message = f"New Booking: {request.user} has booked your rental {rental_id}"
+                    create_rental_notification(
+                        to_user=owner, message=message, rental_id=rental_id
+                    )
+                    send_notification_count(to_user=owner)
+
+        except Exception as e:
+            raise PermissionDenied(f"Failed to book rental: {str(e)}")
+
+        return HttpResponseRedirect(reverse("home"))
     else:
         raise PermissionDenied("Invalid request method.")
     return render(request, "booking_form.html", {"form": form})
@@ -239,11 +253,9 @@ def cancel_booking(request, rental_id):
             booking.status = "CANCELLED"
             booking.save()
 
-            message = (
-                f"Booking: {request.user} has cancelled booking of rengal {rental_id}"
-            )
+            message = f"Booking Cancelled: {request.user} has cancelled booking of rental {rental_id}"
             create_rental_notification(
-                to_user=booking.rental.owner.user, message=message
+                to_user=booking.rental.owner.user, message=message, rental_id=rental_id
             )
             send_notification_count(to_user=booking.rental.owner.user)
         return HttpResponseRedirect(reverse("home"))
@@ -269,10 +281,10 @@ def update_booking(request, rental_id):
             booking.status = "PENDING"
             booking.save()
 
-            message = (
-                f"Booking: {request.user} has updated booking of rengal {rental_id}"
+            message = f"Booking Updated: {request.user} has updated booking of rental {rental_id}"
+            create_rental_notification(
+                to_user=owner, message=message, rental_id=rental_id
             )
-            create_rental_notification(to_user=owner, message=message)
             send_notification_count(to_user=owner)
             return HttpResponseRedirect(reverse("home"))
     else:
@@ -324,82 +336,114 @@ class BookingDetailView(LoginRequiredMixin, generic.DetailView):
 
 @login_required
 def confirm_booking(request):
-    """confirmation of booking and rejection of other bookings for particular rental instance."""
+    """Confirmation of booking and rejection of other bookings for a particular rental instance."""
     if request.method == "POST":
-        booking_id = request.POST.get("booking_id", None)
-        if booking_id:
-            booking = get_object_or_404(Booking, pk=booking_id)
-            owner = booking.rental.owner.user
+        booking_id = request.POST.get("booking_id")
+        if not booking_id:
+            raise PermissionDenied("Booking ID is required.")
 
-            if request.user != owner:
-                raise PermissionDenied("Only Owner can confirm and reject booking.")
+        booking = get_object_or_404(
+            Booking.objects.select_related("rental"), pk=booking_id
+        )
+        owner = booking.rental.owner.user
 
-            try:
-                with transaction.atomic():
-                    booking.status = "CONFIRMED"
-                    booking.save()
-                    booking.rental.available_for_rent = False
-                    booking.rental.save()
+        if request.user != owner:
+            raise PermissionDenied("Only the owner can confirm and reject bookings.")
 
-                    confirm_message = f"Booking: {request.user} has confirmed booking of rental {booking.rental.id}"
+        try:
+            with transaction.atomic():
+                booking.status = "CONFIRMED"
+                booking.save()
+
+                booking.rental.available_for_rent = False
+                booking.rental.save()
+
+                confirm_message = f"Booking: {request.user} has confirmed the booking of rental {booking.rental.id}"
+                create_rental_notification(
+                    to_user=booking.user,
+                    message=confirm_message,
+                    rental_id=booking.rental.id,
+                )
+                send_notification_count(to_user=booking.user)
+
+                rejected_bookings = booking.rental.booking_set.exclude(id=booking_id)
+                rejected_bookings.update(status="REJECTED")
+
+                for rejected_booking in rejected_bookings:
+                    reject_message = f"Booking: {request.user} has rejected the booking of rental {booking.rental.id}"
                     create_rental_notification(
-                        to_user=booking.user, message=confirm_message
+                        to_user=rejected_booking.user,
+                        message=reject_message,
+                        rental_id=booking.rental_id,
                     )
-                    send_notification_count(to_user=booking.user)
+                    send_notification_count(to_user=rejected_booking.user)
 
-                    if booking.rental.booking_set.exists():
-                        rejected_bookings = booking.rental.booking_set.exclude(
-                            id=booking_id
-                        )
-                        rejected_bookings.update(status="REJECTED")
-
-                        for rejected_booking in rejected_bookings:
-                            reject_message = f"Booking: {request.user} has rejected booking of rental {booking.rental.id}"
-                            create_rental_notification(
-                                to_user=rejected_booking.user, message=reject_message
-                            )
-                            send_notification_count(to_user=booking.user)
-
-            except Exception as e:
-                raise PermissionDenied("Failed to update booking status.")
+        except Exception as e:
+            raise PermissionDenied(f"Failed to update booking status: {str(e)}")
 
         return HttpResponseRedirect(reverse("bookings", args=[booking.rental_id]))
+
     else:
         raise PermissionDenied("Invalid request method.")
 
 
 @login_required
 def reject_booking(request):
-    """reject booking of particular rental instance"""
+    """Reject booking of a particular rental instance."""
     if request.method == "POST":
-        booking_id = request.POST.get("booking_id", None)
-        if booking_id:
-            booking = get_object_or_404(Booking, pk=booking_id)
-            owner = booking.rental.owner.user
-            if request.user != owner:
-                raise PermissionDenied("Only Owner can reject booking.")
-            booking.status = "REJECTED"
-            booking.save()
-            if not booking.rental.booking_set.filter(status="CONFIRMED").exists():
-                booking.rental.available_for_rent = True
-                booking.rental.save()
+        booking_id = request.POST.get("booking_id")
+        if not booking_id:
+            raise PermissionDenied("Booking ID is required.")
 
-            message = f"Booking: {request.user} has rejected booking of rental {booking.rental.id}"
-            create_rental_notification(to_user=booking.user, message=message)
-            send_notification_count(to_user=booking.user)
-        return HttpResponseRedirect(reverse("bookings", args=[booking.rental_id]))
+        booking = get_object_or_404(
+            Booking.objects.select_related("rental"), pk=booking_id
+        )
+        owner = booking.rental.owner.user
+
+        if request.user != owner:
+            raise PermissionDenied("Only the owner can reject the booking.")
+
+        try:
+            with transaction.atomic():
+                booking.status = "REJECTED"
+                booking.save()
+
+                # Check if no other bookings are confirmed
+                if not booking.rental.booking_set.filter(status="CONFIRMED").exists():
+                    booking.rental.available_for_rent = True
+                    booking.rental.save()
+
+                message = f"Booking: {request.user} has rejected the booking of rental {booking.rental.id}"
+                create_rental_notification(
+                    to_user=booking.user, message=message, rental_id=booking.rental.id
+                )
+                send_notification_count(to_user=booking.user)
+
+        except Exception as e:
+            raise PermissionDenied(f"Failed to reject booking: {str(e)}")
+
+        return HttpResponseRedirect(reverse("bookings", args=[booking.rental.id]))
+
     else:
         raise PermissionDenied("Invalid request method.")
 
 
 @login_required
 def remove_booking(request):
-    """remove booking of particular rental instance"""
+    """Remove booking of a particular rental instance."""
     if request.method == "POST":
-        booking_id = request.POST.get("booking_id", None)
-        if booking_id:
-            booking = get_object_or_404(Booking, pk=booking_id)
+        booking_id = request.POST.get("booking_id")
+        if not booking_id:
+            raise PermissionDenied("Booking ID is required.")
+
+        booking = get_object_or_404(
+            Booking.objects.select_related("rental"), pk=booking_id
+        )
+
+        with transaction.atomic():
             booking.delete()
-        return HttpResponseRedirect(reverse("booking-detail", args=[booking.rental_id]))
+
+        return HttpResponseRedirect(reverse("booking-detail", args=[booking.rental.id]))
+
     else:
         raise PermissionDenied("Invalid request method.")

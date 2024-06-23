@@ -43,6 +43,10 @@
         overflow-y: auto;
     }
 
+    .unread {
+        background-color: #f4f4f4;
+    }
+
     .notification {
         padding: 10px;
         border-bottom: 1px solid #eee;
@@ -160,45 +164,6 @@
                         <i class="fa fa-user-plus" aria-hidden="true"></i>
                         Sign Up</a>
                     {% endif %}
-
-                    <!-- <div class="notification-container position-relative">
-                        <i class="fa fa-bell" aria-hidden="true" id="bell" data-count="0"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            0
-                        </span>
-                        <div class="notifications-popup visually-hidden">
-                            <div class="notify-header">
-                                <h2>Notifications</h2>
-                                <button class="mark-read">Mark all as read</button>
-                            </div>
-                            <div class="notifications">
-                                <div class="notification">
-                                    <div class="time">Now in django • 54m</div>
-                                    <div class="content">Django Rest Framework is CSRF token needed to protect login
-                                        page
-                                    </div>
-                                </div>
-                                <div class="notification">
-                                    <div class="time">djangolearning • 1h</div>
-                                    <div class="content">Guidance or advice from fellow devs!</div>
-                                </div>
-                                <div class="notification">
-                                    <div class="time">u/SquareCreme9098 replied to your comment in r/django • May 12
-                                    </div>
-                                    <div class="content">Yes, it does. I've made some progress, ended up just manually
-                                        setting the attribute
-                                        of
-                                        the form...</div>
-                                </div>
-                            </div>
-                            <div class="footer">
-                                <button class="see-all">See All</button>
-                            </div>
-                        </div>
-
-                    </div> -->
-
-
                 </div>
             </div>
 
@@ -215,7 +180,7 @@
                             <button class="mark-read">Mark all as read</button>
                         </div>
                         <div class="notifications">
-                            <div class="notification">
+                            <!-- <div class="notification">
                                 <div class="time">Now in django • 54m</div>
                                 <div class="content">Django Rest Framework is CSRF token needed to protect login
                                     page
@@ -232,7 +197,7 @@
                                     setting the attribute
                                     of
                                     the form...</div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="footer">
                             <button class="see-all">See All</button>
@@ -258,7 +223,8 @@
 
 
 <script src="{% static 'js/nav.js' %}">
-
 </script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+
 
 {% endblock nav%}

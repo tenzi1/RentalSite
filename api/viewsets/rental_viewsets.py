@@ -5,7 +5,8 @@ from django.db.models import Q, Min, Max
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, filters
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -17,8 +18,10 @@ from api.serializers.rental_serializers import (
     DetailRentalSerializer,
     ListRentalSerializer,
     CreateCategorySerializer,
+    NotificationSerializer,
+    MarkReadSerializer,
 )
-from rentals.models import Category, Rental
+from rentals.models import Category, Rental, Notification
 
 
 @extend_schema(tags=["Category"])
@@ -108,3 +111,33 @@ class AddCategoryView(APIView):
     def post(self, request):
         data = request.POST
         return Response(data={"data": data}, template_name=self.template_name)
+
+
+@extend_schema(tags=["Notification"])
+class NotificationViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = NotificationSerializer
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user).order_by(
+            "-created_at"
+        )
+
+    @action(detail=False, methods=["post"])
+    def mark_read(self, request):
+        serializer = MarkReadSerializer(data=request.data)
+        if serializer.is_valid():
+            Notification.objects.filter(
+                id__in=serializer.validated_data["ids"], read=False, user=request.user
+            ).update(read=True)
+            return Response({"message": "Successfully updated"}, status=200)
+        else:
+            return Response(serializer.errors, status=400)
+
+    @action(detail=False, methods=["post"])
+    def mark_all_read(self, request):
+        try:
+            Notification.objects.filter(read=False, user=request.user).update(read=True)
+            return Response({"message": "Successfully updated"})
+        except Exception as e:
+            return Response({"error": f"Failed update: {e}"}, status=400)

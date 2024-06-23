@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from rentals.models import Category, Rental
+from rentals.models import Category, Rental, Notification
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -121,3 +121,13 @@ class CreateCategorySerializer(serializers.ModelSerializer):
         fields = [
             "name",
         ]
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ("id", "message", "read", "created_at", "rental_id")
+
+
+class MarkReadSerializer(serializers.Serializer):
+    ids = serializers.ListField(child=serializers.IntegerField())
