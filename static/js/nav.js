@@ -71,26 +71,30 @@ function fetchNotifications() {
 
 // Function to render notifications
 function renderNotifications(notifications) {
-
     const notificationGroup = document.querySelector('.notifications')
     notificationGroup.innerHTML = '';
 
-    notifications.forEach(notification => {
-        const notificationElement = document.createElement('div');
-        if (!notification.read) {
-            notificationElement.classList.add('notification', 'unread');
-        } else {
-            notificationElement.classList.add('notification');
-        }
-        notificationElement.id = notification.id
-        notificationElement.innerHTML = `
+    if (notifications.length == 0) {
+        notificationGroup.innerHTML = '<small>Currently no new notifications are available.</small>'
+    } else {
+        notifications.forEach(notification => {
+            const notificationElement = document.createElement('div');
+            if (!notification.read) {
+                notificationElement.classList.add('notification', 'unread');
+            } else {
+                notificationElement.classList.add('notification');
+            }
+            notificationElement.id = notification.id
+            notificationElement.innerHTML = `
 
         <a href="http://${window.location.host}/bookings/${notification.rental_id}/">
             <div class="time">Rental • ${moment(notification.created_at).fromNow()}</div>
             <div class="content">${notification.message}</div>
         </a>`;
-        notificationGroup.appendChild(notificationElement)
-    });
+            notificationGroup.appendChild(notificationElement)
+        });
+    }
+
 
 }
 
@@ -107,7 +111,6 @@ document.querySelector('.notification-container').onclick = function (e) {
     }
 };
 
-// 
 document.addEventListener('DOMContentLoaded', function () {
     var container = document.querySelector('.notifications');
 
@@ -147,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     document.querySelector('.mark-read').onclick = function (e) {
-        console.log('hererer')
         fetch("/api/v1/notifications/mark_all_read/", {
             method: "POST",
             headers: {
@@ -155,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 "X-CSRFToken": csrftoken
             },
             body: JSON.stringify({})
+
 
         })
     }

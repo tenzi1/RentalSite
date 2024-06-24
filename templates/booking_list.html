@@ -30,7 +30,6 @@ Booking List
                 <div class="card card-wrapper">
                     <div class="card-body">
                         <h5 class="card-title">Rental Booking</h5>
-                        <p>{{ booking.rental.id }}</p>
                         <p class="badge bg-dark">{{ booking.status }}</p>
                         <p>booked by <a href="{% url 'profile' booking.user_id %}">{{ booking.user.username }}</a></p>
                         <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of

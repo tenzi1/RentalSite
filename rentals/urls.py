@@ -8,6 +8,7 @@ from .views import (
     ListRentalImageView,
     BookingListView,
     BookingDetailView,
+    NotificationListView,
     upload_rental_image,
     delete_rental_image,
     add_favorite,
@@ -56,4 +57,7 @@ urlpatterns = [
     path("confirm_booking/", confirm_booking, name="confirm-booking"),
     path("reject_booking/", reject_booking, name="reject-booking"),
     path("remove_booking/", remove_booking, name="remove-booking"),
+    path(
+        "all_notifications/", NotificationListView.as_view(), name="notification-list"
+    ),
 ]

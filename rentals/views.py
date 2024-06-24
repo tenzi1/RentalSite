@@ -447,3 +447,13 @@ def remove_booking(request):
 
     else:
         raise PermissionDenied("Invalid request method.")
+
+
+class NotificationListView(generic.ListView):
+    model = Notification
+    template_name = "notification_list.html"
+    context_object_name = "notifications"
+    paginate_by = 10
+
+    def get_queryset(self) -> QuerySet[reverse_lazy]:
+        return self.model.objects.order_by("-created_at")
