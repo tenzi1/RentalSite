@@ -1,5 +1,7 @@
 {% extends '_base.html' %}
 
+{% load static %}
+
 {% block title %}
 Booking List
 {% endblock %}
@@ -18,6 +20,32 @@ Booking List
         border-radius: 10px;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     }
+
+    .badge {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .badge.pending {
+        background-color: #ffc107;
+        color: #fff;
+    }
+
+    .badge.approved {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .badge.rejected {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .badge.completed {
+        background-color: #17a2b8;
+        color: #fff;
+    }
 </style>
 <div class="container">
     <div class="wrapper">
@@ -29,11 +57,37 @@ Booking List
             <div class="col-md-4 col-sm-6">
                 <div class="card card-wrapper">
                     <div class="card-body">
-                        <h5 class="card-title">Rental Booking</h5>
-                        <p>{{ booking.rental.id }}</p>
-                        <p class="badge bg-dark">{{ booking.status }}</p>
-                        <p>booked by <a href="{% url 'profile' booking.user_id %}">{{ booking.user.username }}</a></p>
+                        <!-- <h5 class="card-title">Rental Booking</h5> -->
+                        <div class="booking-status">
+                            Rental Booking
+                            {% if booking.status == 'PENDING' %}
+                            <span class="badge pending">Pending</span>
+                            {% elif booking.status == 'CONFIRMED' %}
+                            <span class="badge approved">Approved</span>
+                            {% elif booking.status == 'REJECTED' %}
+                            <span class="badge rejected">Rejected</span>
+                            {% elif booking.status == 'CANCELLED' %}
+                            <span class="badge completed">Cancelled</span>
+                            {% endif %}
+                        </div>
+                        <!-- <p class="badge bg-dark">{{ booking.status }}</p> -->
+                        <p>booked by <a href="{% url 'profile' booking.user_id %}">
+                                <strong>{{ booking.user.username}}</strong></a></p>
+                        <div class="chat-button mt-3">
+                            <!-- <i class="fa fa-comments" aria-hidden="true"></i> <i class="fa fa-comments" aria-hidden="true"></i>-->
 
+                            {% if booking.rental.owner.user != request.user %}
+                            <button class="btn btn-primary start-chat" data-user-id="{{ booking.rental.owner.user.id}}">
+                                <i class="fa fa-comments" aria-hidden="true"></i>
+                                Chat with owner</button>
+
+                            {% else %}
+                            <button class="btn btn-primary start-chat" data-user-id="{{ booking.user.id}}">
+                                <i class="fa fa-comments" aria-hidden="true"></i>
+                                Chat with Tenant</button>
+                            {% endif %}
+
+                        </div>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">Booking Date : {{ booking.booking_date}}</li>
@@ -41,30 +95,32 @@ Booking List
                         <li class="list-group-item">Rent End Date: {{booking.rent_end_date}}</li>
                     </ul>
                     <div class="card-body">
+
+                        {% if booking.rental.owner.user != request.user %}
                         {% if booking.status == 'REJECTED' %}
                         <form action="{% url 'remove-booking' %}" method="post" class="d-inline-block">
                             {% csrf_token %}
                             <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                            <input type="submit" value="Remove" class="btn btn-dark">
+                            <input type="submit" value="Remove" class="btn btn-danger">
                         </form>
 
                         {% elif booking.status == 'CANCELLED' %}
                         <form action="{% url 'update-booking' booking.rental.id %}" class="d-inline-block" method="GET">
-                            <input type="submit" class="btn btn-dark" value="Update Booking">
+                            <input type="submit" class="btn btn-info" value="Update Booking">
                         </form>
                         <form action="{% url 'remove-booking' %}" method="post" class="d-inline-block">
                             {% csrf_token %}
                             <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                            <input type="submit" value="Remove" class="btn btn-dark">
+                            <input type="submit" value="Remove" class="btn btn-danger">
                         </form>
                         {% else %}
                         <form action="{% url 'update-booking' booking.rental.id %}" class="d-inline-block" method="GET">
-                            <input type="submit" class="btn btn-dark" value="Update Booking">
+                            <input type="submit" class="btn btn-info" value="Update Booking">
                         </form>
                         <form action="{% url 'cancel-booking' booking.rental.id %}" class="d-inline-block"
                             method="post">
                             {% csrf_token %}
-                            <input type="submit" class="btn btn-dark" value="Cancel Booking">
+                            <input type="submit" class="btn btn-danger" value="Cancel Booking">
                         </form>
                         <!-- <form action="{% url 'remove-booking' %}" method="post" class="d-inline-block">
                             {% csrf_token %}
@@ -73,6 +129,18 @@ Booking List
                         </form> -->
 
                         {% endif %}
+                        {% else %}
+                        <form action="{% url 'confirm-booking' %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="booking_id" value="{{ booking.id}}">
+                            <input type="submit" class=" card-text btn btn-primary" value="Approve">
+                        </form>
+                        <form action="{% url 'reject-booking' %}" method="post" class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="booking_id" value="{{ booking.id}}">
+                            <input type="submit" class=" card-text btn btn-danger" value="Reject">
+                        </form>
+                        {%endif %}
 
                     </div>
                 </div>
@@ -87,5 +155,8 @@ Booking List
     </div>
 
 </div>
-
 {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock%}

@@ -1,12 +1,9 @@
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import user_passes_test, login_required
-from django.db import transaction
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models.base import Model as Model
+from django.db import transaction
+from django.db.models import Q
 from django.db.models.query import QuerySet
-from django.forms import BaseModelForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from django.views.generic import TemplateView
@@ -323,13 +320,20 @@ class BookingDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_object(self):
         try:
-            return (
-                Booking.objects.filter(
-                    rental=self.kwargs["rental_id"], user=self.request.user
-                )
-                .select_related("user", "rental")
-                .first()
+            rental_id = self.kwargs["rental_id"]
+            user = self.request.user
+
+            query = Q(rental_id=rental_id) & (
+                Q(user=user) | Q(rental__owner__user=user)
             )
+
+            booking = (
+                Booking.objects.filter(query).select_related("user", "rental").first()
+            )
+            if booking is None:
+                raise Booking.DoesNotExist
+
+            return booking
         except Booking.DoesNotExist:
             return HttpResponse("Booking Not found for given rental", 400)
 

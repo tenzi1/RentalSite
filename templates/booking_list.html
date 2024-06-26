@@ -1,5 +1,5 @@
 {% extends '_base.html' %}
-
+{% load static %}
 {% block title %}
 Booking List
 {% endblock %}
@@ -18,6 +18,31 @@ Booking List
         border-radius: 10px;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     }
+
+    .badge {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .badge.pending {
+        background-color: #ffc107;
+        color: #fff;
+    }
+
+    .badge.approved {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .badge.rejected {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .badge.completed {
+        background-color: #17a2b8;
+    }
 </style>
 <div class="container">
     <div class="wrapper">
@@ -30,12 +55,28 @@ Booking List
                 <div class="card card-wrapper">
                     <div class="card-body">
                         <h5 class="card-title">Rental Booking</h5>
-                        <p class="badge bg-dark">{{ booking.status }}</p>
-                        <p>booked by <a href="{% url 'profile' booking.user_id %}">{{ booking.user.username }}</a></p>
-                        <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of
-                            the
-                            card's
-                            content.</p> -->
+                        <div class="booking-status">
+                            Rental Booking
+                            {% if booking.status == 'PENDING' %}
+                            <span class="badge pending">Pending</span>
+                            {% elif booking.status == 'CONFIRMED' %}
+                            <span class="badge approved">Approved</span>
+                            {% elif booking.status == 'REJECTED' %}
+                            <span class="badge rejected">Rejected</span>
+                            {% elif booking.status == 'CANCELLED' %}
+                            <span class="badge completed">Cancelled</span>
+                            {% endif %}
+                        </div>
+                        <!-- <p class="badge bg-dark">{{ booking.status }}</p> -->
+                        <p>booked by <a href="{% url 'profile' booking.user_id %}"><strong>
+                                    {{ booking.user.username}}</strong></a></p>
+                        <div class="chat-button mt-3">
+                            <!-- <i class="fa fa-comments" aria-hidden="true"></i> <i class="fa fa-comments" aria-hidden="true"></i>-->
+                            <button class="btn btn-primary start-chat" data-user-id="{{ booking.user.id }}">
+                                <i class="fa fa-comments" aria-hidden="true"></i>
+                                Chat with Tenant</button>
+                        </div>
+
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">Booking Date : {{ booking.booking_date}}</li>
@@ -47,15 +88,15 @@ Booking List
                         <form action="{% url 'confirm-booking' %}" method="post" class="d-inline-block">
                             {% csrf_token %}
                             <input type="hidden" name="booking_id" value="{{ booking.id}}">
-                            <input type="submit" class=" card-text btn btn-dark" value="Confirm">
+                            <input type="submit" class=" card-text btn btn-primary" value="Approve">
                         </form>
                         <form action="{% url 'reject-booking' %}" method="post" class="d-inline-block">
                             {% csrf_token %}
                             <input type="hidden" name="booking_id" value="{{ booking.id}}">
-                            <input type="submit" class=" card-text btn btn-dark" value="Reject">
+                            <input type="submit" class=" card-text btn btn-danger" value="Reject">
                         </form>
                         {% else %}
-                        <a href="#" class="card-link btn btn-dark">Cancel Booking</a>
+                        <a href="#" class="card-link btn btn-danger">Cancel Booking</a>
 
                         {% endif %}
                     </div>
@@ -73,4 +114,9 @@ Booking List
 
 </div>
 
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/chat.js' %}"></script>
 {% endblock %}

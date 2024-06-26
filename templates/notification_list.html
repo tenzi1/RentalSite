@@ -164,7 +164,7 @@ Notifications
             </div>
             {% else%}
             <div class="notification" id="{{ notification.id }}">
-                <a href="{% url 'bookings' notification.rental_id %}">
+                <a href="{% url 'booking-detail' notification.rental_id %}">
                     <div class="time" data-time="{{ notification.created_at|date:" c" }}"></div>
                     <div class="content">{{notification.message}}</div>
                 </a>
