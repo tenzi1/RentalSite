@@ -7,6 +7,8 @@ from users.models import UserProfile
 
 # Create your models here.
 
+User = settings.AUTH_USER_MODEL
+
 
 class IsDeleted(models.Model):
     """
@@ -172,7 +174,7 @@ class RentalImage(models.Model):
 class Favorite(models.Model):
     """To implement favorite feature."""
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     rental = models.ForeignKey(Rental, on_delete=models.CASCADE)
 
 
@@ -184,7 +186,7 @@ class Booking(IsDeleted):
         ("REJECTED", "rejected"),
     )
     rental = models.ForeignKey(Rental, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     booking_date = models.DateTimeField(auto_now_add=True)
     rent_start_date = models.DateField()
     rent_end_date = models.DateField()
@@ -195,12 +197,25 @@ class Booking(IsDeleted):
 
 class Notification(models.Model):
     message = models.CharField(max_length=200)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
-    )
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     rental_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.message
+
+
+class Chat(IsDeleted):
+    message = models.TextField()
+    receiver = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="recieved_messages"
+    )
+    sender = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="sent_messages"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_seen = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Message from {self.sender} to User {self.receiver}"

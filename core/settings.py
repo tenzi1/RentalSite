@@ -217,34 +217,34 @@ INTERNAL_IPS = [
     # ...
 ]
 
-if DEBUG:
+# if DEBUG:
 
-    LOGGING = {
-        # Use v1 of the logging config schema
-        "version": 1,
-        # Continue to use existing loggers
-        "disable_existing_loggers": False,
-        "formatters": {
-            "verbose": {
-                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-                "style": "{",
-            },
-        },
-        # Create a log handler that prints logs to the terminal
-        "handlers": {
-            "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
-        },
-        # Define the root logger's settings
-        "root": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-        },
-        "loggers": {
-            "django.db.backends": {
-                "level": "DEBUG",
-            },
-        },
-    }
+#     LOGGING = {
+#         # Use v1 of the logging config schema
+#         "version": 1,
+#         # Continue to use existing loggers
+#         "disable_existing_loggers": False,
+#         "formatters": {
+#             "verbose": {
+#                 "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+#                 "style": "{",
+#             },
+#         },
+#         # Create a log handler that prints logs to the terminal
+#         "handlers": {
+#             "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
+#         },
+#         # Define the root logger's settings
+#         "root": {
+#             "handlers": ["console"],
+#             "level": "DEBUG",
+#         },
+#         "loggers": {
+#             "django.db.backends": {
+#                 "level": "DEBUG",
+#             },
+#         },
+#     }
 
 ASGI_APPLICATION = "core.asgi.application"
 CHANNEL_LAYERS = {

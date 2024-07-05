@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
@@ -21,6 +23,7 @@ class SignupPageView(generic.CreateView):
     template_name = "registration/signup.html"
 
 
+@login_required
 def profile_view(request, user_id=None):
     """
     Returns user profile informations.
@@ -33,10 +36,15 @@ def profile_view(request, user_id=None):
     return render(request, "registration/user_profile.html", {"profile": profile})
 
 
-def update_profile(request):
+@login_required
+def update_profile(request, user_id):
     """
     Return form with prepopulated user info. Used for profile information update.
     """
+    user = get_object_or_404(User, pk=user_id)
+    if request.user != user:
+        raise PermissionDenied("Only user can update their profile.")
+
     if request.method == "GET":
         form = CreateUserProfileForm(instance=request.user.profile)
         return render(request, "registration/profile_update.html", {"form": form})
@@ -46,13 +54,9 @@ def update_profile(request):
             data=request.POST, files=request.FILES, instance=request.user.profile
         )
         if form.is_valid():
-            print("=====>")
-            print(form.cleaned_data)
-            print("post", request.POST)
-            print("files", request.FILES)
             form.save()
             messages.success(request, "Your profile has been updated!")
-            return redirect("profile")
+            return redirect("profile", user.id)
         else:
             form = CreateUserProfileForm(instance=request.user.profile)
             return render(request, "registration/profile_update.html", {"form": form})

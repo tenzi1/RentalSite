@@ -1,5 +1,7 @@
 """ Serializers for Rental Models"""
 
+from datetime import datetime, timezone
+
 from rest_framework import serializers
 
 from rentals.models import Category, Rental, Notification
@@ -44,9 +46,6 @@ class CreateRentalSerializer(serializers.ModelSerializer):
         #     "date_modified",
         #     "is_deleted",
         # ]
-
-
-from datetime import datetime, timezone
 
 
 class ListRentalSerializer(serializers.ModelSerializer):
