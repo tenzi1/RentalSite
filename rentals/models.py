@@ -214,7 +214,7 @@ class Chat(IsDeleted):
     sender = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, related_name="sent_messages"
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     is_seen = models.BooleanField(default=False)
 
     def __str__(self):

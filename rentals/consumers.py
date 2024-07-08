@@ -3,9 +3,15 @@ import traceback
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from datetime import datetime
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from .models import Notification
+from .redis_utils import get_redis_client
+
+# initializing redis client
+redis_client = get_redis_client()
 
 User = get_user_model()
 
@@ -72,6 +78,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             text_data_json = json.loads(text_data)
             message = text_data_json["message"]
             receiver_id = text_data_json["receiverId"]
+            timestamp = timezone.now().isoformat()
+
+            # store messge in Redis
+            redis_client.rpush(
+                "chat_messages",
+                json.dumps(
+                    {
+                        "message": message,
+                        "senderId": self.user.id,
+                        "receiverId": int(receiver_id),
+                        "created_at": timestamp,
+                    }
+                ),
+            )
+
             receiver_group = f"chat_user_{receiver_id}"
             await self.channel_layer.group_send(
                 receiver_group,

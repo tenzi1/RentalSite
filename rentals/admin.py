@@ -10,6 +10,7 @@ from .models import (
     Country,
     Ward,
     Notification,
+    Chat,
 )
 
 # Register your models here.
@@ -56,6 +57,7 @@ class WardAdmin(admin.ModelAdmin):
 
 admin.site.register(Booking)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(Chat)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(District, DistrictAdmin)
 admin.site.register(Province, ProvinceAdmin)
