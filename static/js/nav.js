@@ -21,24 +21,7 @@ notifySocket.onmessage = function (e) {
     const count = data.count;
     setCount(count);
 }
-// console.log(
-//     'inside off navjs'
-// )
-// console.log('socket', socket)
 
-// socket.onmessage = function (e) {
-//     console.log('notification=====>')
-//     const data = JSON.parse(e.data);
-//     if (data.type == 'notification') {
-//         console.log('inside of notification ======')
-//         setCount(data.count)
-//     }
-// }
-// socket.onmessage = function (e) {
-//     const data = JSON.parse(e.data);
-//     const count = data.count;
-//     setCount(count);
-// }
 function setCount(count) {
     badge = document.querySelector('.notification-container .badge')
 
@@ -50,25 +33,6 @@ function setCount(count) {
     }
 }
 
-// chat socket
-// const chatSocket = new WebSocket(
-//     "ws://"
-//     + window.location.host
-//     + '/ws/chat/'
-// )
-
-// function showMessage(data) {
-//     badge = document.querySelector('.message-container .badge')
-
-//     if (data) {
-//         badge.classList.remove('visually-hidden')
-//     }
-// }
-// chatSocket.onmessage = function (e) {
-//     const data = JSON.parse(e.data)
-
-//     showMessage(data)
-// }
 
 function getCookie(name) {
     let cookieValue = null;
@@ -202,30 +166,4 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// 
 
-// Chat 
-document.querySelector('.message-icon').onclick = function (e) {
-    const notificationContainer = document.querySelector('.messages-popup');
-    notificationContainer.classList.toggle('visually-hidden');  // Toggle visibility
-
-    // Fetch and render notifications if the container is not hidden
-    if (!notificationContainer.classList.contains('visually-hidden')) {
-        fetchNotifications().then(notifications => {
-            renderNotifications(notifications);
-        });
-
-    }
-};
-
-document.querySelectorAll('.chat-item').forEach(function (item) {
-    item.addEventListener('click', function (e) {
-        document.querySelector('.messages-popup').classList.add('visually-hidden');
-        document.querySelector('.chat-container').classList.remove('visually-hidden');
-    });
-});
-
-
-// document.querySelector('.close-icon').onclick = function (e) {
-//     document.querySelector('.chat-container').classList.add('visually-hidden')
-// }

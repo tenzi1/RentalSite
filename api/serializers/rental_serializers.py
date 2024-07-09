@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 from rest_framework import serializers
 
-from rentals.models import Category, Rental, Notification
+from rentals.models import Category, Chat, Rental, Notification
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -130,3 +130,20 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 class MarkReadSerializer(serializers.Serializer):
     ids = serializers.ListField(child=serializers.IntegerField())
+
+
+class ChatSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField()
+    sent = serializers.BooleanField()
+
+    class Meta:
+        model = Chat
+        fields = (
+            "id",
+            "message",
+            "created_at",
+            "user_id",
+            "sent",
+            "sender",
+            "receiver",
+        )

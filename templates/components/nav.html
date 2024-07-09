@@ -230,7 +230,7 @@
     } */
 
     .chat-content {
-        max-height: 60vh;
+        max-height: 40vh;
         flex: 1;
         padding: 10px;
         overflow-y: scroll;
@@ -304,7 +304,6 @@
 </style>
 <header class="header sticky-top">
     <div class="container nav-container">
-
         <nav class="nav">
             <div class="first-menu navbar navbar-expand-lg">
 
@@ -361,24 +360,7 @@
                             <button class="mark-read">Mark all as read</button>
                         </div>
                         <div class="notifications">
-                            <!-- <div class="notification">
-                                <div class="time">Now in django • 54m</div>
-                                <div class="content">Django Rest Framework is CSRF token needed to protect login
-                                    page
-                                </div>
-                            </div>
-                            <div class="notification">
-                                <div class="time">djangolearning • 1h</div>
-                                <div class="content">Guidance or advice from fellow devs!</div>
-                            </div>
-                            <div class="notification">
-                                <div class="time">u/SquareCreme9098 replied to your comment in r/django • May 12
-                                </div>
-                                <div class="content">Yes, it does. I've made some progress, ended up just manually
-                                    setting the attribute
-                                    of
-                                    the form...</div>
-                            </div> -->
+
                         </div>
                         <div class="footer">
 
@@ -402,74 +384,13 @@
                         </div>
                         <div class="messages">
                             <div class="chat-list">
-                                <!-- <div class="chat-item">
-                                    <img src="profile1.jpg" alt="User 1">
-                                    <div class="chat-details">
-                                        <p class="chat-name">John Doe</p>
-                                        <p class="chat-message"> Is this available? <span class="time">54m</span></p>
-                                    </div>
-                                </div>
-                                <div class="chat-item">
-                                    <img src="profile1.jpg" alt="User 1">
-                                    <div class="chat-details">
-                                        <p class="chat-name">John Doe</p>
-                                        <p class="chat-message"> Lorem ipsum dolor sit amet consectetur adipisicing
-                                            elit. Aliquid, a nostrum at eius suscipit esse? <span
-                                                class="time">54m</span></p>
-                                    </div>
-                                </div>
-                                <div class="chat-item">
-                                    <img src="profile1.jpg" alt="User 1">
-                                    <div class="chat-details">
-                                        <p class="chat-name">John Doe</p>
-                                        <p class="chat-message"> Is this available? <span class="time">54m</span></p>
-                                    </div>
-                                </div>
-                                <div class="chat-item">
-                                    <img src="profile1.jpg" alt="User 1">
-                                    <div class="chat-details">
-                                        <p class="chat-name">John Doe</p>
-                                        <p class="chat-message"> Is this available? <span class="time">54m</span></p>
-                                    </div>
-                                </div> -->
+                                <p class="no-chat visually-hidden">
+                                    <small>Currently no message in Inbox.</small>
+                                </p>
                             </div>
                         </div>
 
                     </div>
-                    <!--  -->
-
-                    <!-- <div class="chat-container visually-hidden"> -->
-                    <!-- <div class="unique-chat"> -->
-                    <!-- <div class="chat-header">
-                                <img src="profile-pic.jpg" alt="Profile Picture" class="profile-pic">
-                                <div class="header-info">
-                                    <span class="name">John Doe</span>
-                                    <i class="fa fa-times close-icon" id="close-chat"></i>
-                                </div>
-                            </div> -->
-                    <!-- </div> -->
-
-                    <!-- <div class="chat-content"> -->
-                    <!-- <div class="message left">
-                                <span class="time">7:02 AM</span>
-                                <div class="message-content">
-                                    <p>Check out this job at Tantrik:</p>
-                                </div>
-                            </div>
-
-                            <div class="message right">
-                                <span class="time">Sent 3h ago</span>
-                                <div class="message-content">
-                                    <p>the link is expired. can you send me new one?</p>
-                                </div>
-                            </div> -->
-                    <!-- </div> -->
-                    <!-- <div class="chat-input">
-                            <input type="text" placeholder="Aa">
-                            <button type="button">Send</button>
-                        </div> -->
-                    <!-- </div> -->
-
                 </div>
 
             </div>
@@ -483,7 +404,6 @@
 </header>
 
 
-<script src="{% static 'js/socket.js' %}"></script>
 
 <script src="{% static 'js/nav.js' %}">
 </script>

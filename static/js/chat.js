@@ -73,6 +73,8 @@ function alertMessage() {
 
 
 function renderSender(message, senderId, userDetails) {
+
+
     chatItem = document.getElementById(`chat-${senderId}`)
     if (!chatItem) {
 
@@ -102,23 +104,86 @@ function renderSender(message, senderId, userDetails) {
 
     } else {
         p2 = document.getElementById(`p_${senderId}`)
-        p2.textContent = message
+        p2.textContent = message.slice(0, 15) + '...';
 
 
     }
 
     document.querySelectorAll('.chat-item').forEach(
         function (chat) {
-            chat.addEventListener('click', function (e) {
+            chat.addEventListener('click', async function (e) {
                 const user_id = chat.getAttribute('data-user-id');
-                chatContainer = document.getElementById(`main-chat-${user_id}`)
-                chatContainer.classList.remove('visually-hidden')
+                mainContainer = document.getElementById(`main-chat-${user_id}`)
+                mainContainer.classList.remove('visually-hidden')
+
+                chatContainer = document.getElementById(`chat-content-${user_id}`)
+
+                let currentPage = 1;
+                let allChatsFetched = false;
+
+                try {
+                    // Function to fetch chats with error handling
+                    const fetchAndRenderChats = async () => {
+
+                        if (chatContainer.hasChildNodes()) {
+                            return;
+                        } else {
+                            console.log("The container does not have any child elements.");
+                            const chats = await fetchChats(user_id, currentPage);
+                            if (!chats) {
+                                console.log('No chats found for page:', currentPage);
+                                allChatsFetched = true;
+                                return;
+                            }
+                            renderChats(chats);
+
+                            // Previous scroll position to detect scroll direction
+                            let prevScrollTop = chatContainer.scrollTop;
+
+                            // Scroll event listener to fetch older messages
+                            chatContainer.addEventListener('scroll', async () => {
+                                if (!allChatsFetched && chatContainer.scrollTop === 0 && chatContainer.scrollTop < prevScrollTop) {
+                                    currentPage++;
+                                    try {
+                                        const olderChats = await fetchChats(user_id, currentPage);
+                                        if (!olderChats || olderChats.length === 0) {
+                                            allChatsFetched = true;
+                                            return;
+                                        }
+                                        renderChats(olderChats, true);
+                                    } catch (error) {
+                                        console.error('Error fetching older chats:', error);
+                                    }
+                                }
+                                // Update previous scroll position
+                                prevScrollTop = chatContainer.scrollTop;
+                            });
+                        }
+                    };
+
+                    // Initial fetch and render
+                    await fetchAndRenderChats();
+
+                } catch (error) {
+                    console.error('Error while fetching initial chats:', error);
+                }
+
+
             })
         }
     )
 
 }
 
+function renderChats(chats, prepend = false) {
+    chats.reverse().forEach((chat) => {
+        if (chat.sent) {
+            renderSentMessage(chat.message, chat.user_id, prepend);
+        } else {
+            renderReceivedMessage(chat.message, chat.user_id, prepend);
+        }
+    });
+}
 
 
 // function to send message on websocket
@@ -222,7 +287,7 @@ function renderChatContainer(chatId, chatDetail) {
 
 
 // function to render sent messages.
-function renderSentMessage(message, receiverId) {
+function renderSentMessage(message, receiverId, prepend = false) {
     divChatContent = document.getElementById(`chat-content-${receiverId}`);
 
     p = document.createElement('p');
@@ -235,14 +300,18 @@ function renderSentMessage(message, receiverId) {
 
     divMessageContainer = document.createElement('div');
     divMessageContainer.classList.add('message', 'left');
-
     divMessageContainer.appendChild(divMessage);
-    divChatContent.appendChild(divMessageContainer);
+
+    if (prepend) {
+        divChatContent.insertBefore(divMessageContainer, divChatContent.firstChild);
+    } else {
+        divChatContent.appendChild(divMessageContainer);
+    }
 
 }
 
 // function to render received messages.
-function renderReceivedMessage(message, senderId) {
+function renderReceivedMessage(message, senderId, prepend = false) {
     divChatContent = document.getElementById(`chat-content-${senderId}`);
 
     p = document.createElement('p');
@@ -255,10 +324,53 @@ function renderReceivedMessage(message, senderId) {
 
     divMessageContainer = document.createElement('div');
     divMessageContainer.classList.add('message', 'right');
-
     divMessageContainer.appendChild(divMessage);
-    divChatContent.appendChild(divMessageContainer);
 
+    if (prepend) {
+        divChatContent.insertBefore(divMessageContainer, divChatContent.firstChild);
+    } else {
+        divChatContent.appendChild(divMessageContainer);
+    }
+
+}
+
+// Function to fetch chats
+function fetchChats(user_id, page = 1) {
+    return fetch(`/api/v1/chats/?user_id=${user_id}&page=${page}`, {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(response => response.json())
+        .then(data => {
+            if (!data) {
+                console.log("No data received");
+                return [];
+            }
+            return data.results;
+        })
+        .catch(error => {
+            console.error("Error fetching chats:", error);
+            return [];
+        })
+}
+
+function fetchLatestChats() {
+    return fetch("/api/v1/latest_chats/", {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(response => response.json())
+        .then(data => {
+            if (!data) {
+                console.log("No data received");
+                return [];
+            }
+            return data.results;
+        })
+        .catch(error => {
+            console.error("Error fetching chats:", error);
+            return [];
+        })
 }
 
 
@@ -292,4 +404,35 @@ document.addEventListener('DOMContentLoaded', function () {
             })
         }
     );
+
+    // Chat 
+    document.querySelector('.message-icon').onclick = function (e) {
+        const messageContainer = document.querySelector('.messages-popup');
+        messageContainer.classList.toggle('visually-hidden');  // Toggle visibility
+
+        // Fetch and render chats if the container is not hidden
+        if (!messageContainer.classList.contains('visually-hidden')) {
+            fetchLatestChats()
+                .then(chats => {
+                    if (chats.length == 0) {
+                        document.querySelector('.no-chat').classList.remove('visually-hidden')
+
+                    } else {
+                        document.querySelector('.no-chat').classList.add('visually-hidden')
+                    }
+
+                    chats.forEach(async function (chat) {
+                        user_data = await getUserDetail(chat.user_id);
+                        renderChatContainer(chat.user_id, user_data)
+                        renderSender(chat.message, chat.user_id, user_data);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching chats:', error);
+                });
+        }
+    };
+
 });
+
+

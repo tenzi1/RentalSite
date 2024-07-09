@@ -1,27 +1,29 @@
 """ Viewsets for rental models."""
 
 from django.db import connection
-from django.db.models import Q, Min, Max
+from django.db.models import Q, Min, Max, F, Case, When, IntegerField, BooleanField
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, filters
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.pagination import PageNumberPagination
 
 from api.filters import RentalFilterSet
 from api.serializers.rental_serializers import (
     CategorySerializer,
     CreateRentalSerializer,
+    ChatSerializer,
     DetailRentalSerializer,
     ListRentalSerializer,
     CreateCategorySerializer,
     NotificationSerializer,
     MarkReadSerializer,
 )
-from rentals.models import Category, Rental, Notification
+from rentals.models import Category, Chat, Rental, Notification
 
 
 @extend_schema(tags=["Category"])
@@ -141,3 +143,106 @@ class NotificationViewSet(viewsets.ModelViewSet):
             return Response({"message": "Successfully updated"})
         except Exception as e:
             return Response({"error": f"Failed update: {e}"}, status=400)
+
+
+class ChatViewSet(viewsets.ModelViewSet):
+    """Viewset for listing and updating chat messages."""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChatSerializer
+    http_method_names = ["get", "put"]
+
+    def get_queryset(self):
+        other_user_id = self.request.GET.get("user_id", None)
+        user = self.request.user
+
+        query = Q(sender=user) | Q(receiver=user)
+        if other_user_id:
+            query &= Q(sender=int(other_user_id)) | Q(receiver=int(other_user_id))
+
+        queryset = (
+            Chat.objects.filter(query)
+            .order_by("-created_at")
+            .annotate(
+                user_id=Case(
+                    When(sender=user, then=F("receiver_id")),
+                    When(receiver=user, then=F("sender_id")),
+                    output_field=IntegerField(),
+                ),
+                sent=Case(
+                    When(sender=user, then=True),
+                    When(receiver=user, then=False),
+                    output_field=BooleanField(),
+                ),
+            )
+        )
+        return queryset
+
+
+@permission_classes([IsAuthenticated])
+@api_view(["GET"])
+def get_latest_chat_for_user(request):
+
+    user_id = request.user.id
+    page_number = int(request.query_params.get("page", 1))
+    page_size = int(request.query_params.get("page_size", 10))
+    skip = (page_number - 1) * page_size
+
+    query = f"""
+        SELECT id, sender_id, receiver_id, message, created_at
+        FROM rentals_chat c
+        WHERE c.id IN (
+            SELECT MAX(id) AS max_id
+            FROM rentals_chat
+            WHERE receiver_id = {user_id} OR sender_id = {user_id}
+            GROUP BY CASE
+                WHEN sender_id = {user_id} THEN receiver_id
+                WHEN receiver_id = {user_id} THEN sender_id
+            END
+        )
+        ORDER BY created_at DESC
+        LIMIT {page_size} OFFSET {skip}
+    """
+
+    # Count query to fetch total number of results
+    count_query = f"""
+        SELECT COUNT(*) AS total_count
+        FROM rentals_chat c
+        WHERE c.id IN (
+            SELECT MAX(id) AS max_id
+            FROM rentals_chat
+            WHERE receiver_id = {user_id} OR sender_id = {user_id}
+            GROUP BY CASE
+                WHEN sender_id = {user_id} THEN receiver_id
+                WHEN receiver_id = {user_id} THEN sender_id
+            END
+        )
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        cursor.execute(count_query)
+        total_count = cursor.fetchone()[0]
+
+    chats = []
+    for row in rows:
+        if row[1] == user_id:
+            other_user_id = row[2]
+        else:
+            other_user_id = row[1]
+
+        chat = {
+            "id": row[0],
+            "user_id": other_user_id,
+            "message": row[3],
+            "created_at": row[4].isoformat(),
+        }
+        chats.append(chat)
+    return Response(
+        {
+            "count": total_count,
+            "results": chats,
+        }
+    )

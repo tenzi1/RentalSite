@@ -14,7 +14,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     "save-messages-every-minute": {
         "task": "rentals.tasks.save_messages_from_redis",
-        "schedule": crontab(minute="*/1"),
+        "schedule": 10.0,
     },
     "celery-backend-cleanup": {
         "task": "celery.backend_cleanup",
