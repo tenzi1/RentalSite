@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+import redis
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -217,38 +218,66 @@ INTERNAL_IPS = [
     # ...
 ]
 
-if DEBUG:
+# if DEBUG:
 
-    LOGGING = {
-        # Use v1 of the logging config schema
-        "version": 1,
-        # Continue to use existing loggers
-        "disable_existing_loggers": False,
-        "formatters": {
-            "verbose": {
-                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-                "style": "{",
-            },
-        },
-        # Create a log handler that prints logs to the terminal
-        "handlers": {
-            "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
-        },
-        # Define the root logger's settings
-        "root": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-        },
-        "loggers": {
-            "django.db.backends": {
-                "level": "DEBUG",
-            },
-        },
-    }
+#     LOGGING = {
+#         # Use v1 of the logging config schema
+#         "version": 1,
+#         # Continue to use existing loggers
+#         "disable_existing_loggers": False,
+#         "formatters": {
+#             "verbose": {
+#                 "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+#                 "style": "{",
+#             },
+#         },
+#         # Create a log handler that prints logs to the terminal
+#         "handlers": {
+#             "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
+#         },
+#         # Define the root logger's settings
+#         "root": {
+#             "handlers": ["console"],
+#             "level": "DEBUG",
+#         },
+#         "loggers": {
+#             "django.db.backends": {
+#                 "level": "DEBUG",
+#             },
+#         },
+#     }
 
+
+# REDIS SETTINGS
+REDIS_HOST = os.environ.get("REDIS_HOST")
+REDIS_PORT = os.environ.get("REDIS_PORT")
+
+redis_client = redis.Redis(
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+)
+
+# CELERY SETTINGS
+CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+CELERY_RESULT_EXPIRES = 60
+
+# DJANGO CHANNELS
 ASGI_APPLICATION = "core.asgi.application"
+
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                (REDIS_HOST, REDIS_PORT),
+            ]
+            # ("127.0.0.1", 6379)],
+        },
+    },
 }
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer",
+#     }
+# }

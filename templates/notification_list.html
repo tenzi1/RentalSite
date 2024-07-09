@@ -1,0 +1,274 @@
+{% extends '_base.html' %}
+
+{% block title %}
+Notifications
+{% endblock %}
+
+{% block content %}
+<style>
+    .main-notification-container {
+        background-color: white;
+    }
+
+    .notify-header h1 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .notification-group {
+        max-height: 100vh;
+        overflow-y: auto;
+
+    }
+
+    .main-mark-read {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 0 5px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        text-decoration: none;
+        color: #333;
+        cursor: pointer;
+    }
+
+    /* Pagination styles */
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+    }
+
+    .step-links {
+        display: inline-block;
+    }
+
+    .step-links a,
+    .step-links .current {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 0 5px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .step-links a {
+        background-color: #f4f4f4;
+    }
+
+    .main-mark-read:hover,
+    .step-links a:hover {
+        background-color: #e4e4e4;
+    }
+
+    .step-links .current {
+        background-color: #ddd;
+        font-weight: bold;
+    }
+
+    /* .notify-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    
+
+    .tabs {
+        display: flex;
+    }
+
+    .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        border: none;
+        background-color: #fff;
+        border-bottom: 2px solid transparent;
+        font-size: 16px;
+        margin-right: 5px;
+    }
+
+    .tab.active {
+        border-bottom: 2px solid #007bff;
+    }
+
+    .content {
+        padding: 0 10px;
+    }
+
+    .notifications-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notifications-header h2 {
+        margin: 0;
+        font-size: 18px;
+        color: #666;
+    }
+
+    
+    .mark-read:hover {
+        background-color: #0056b3;
+    }
+
+    .notifications-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .notification-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .notification-title {
+        font-weight: bold;
+    }
+
+    .notification-description {
+        color: #555;
+    }
+
+    .notification-time {
+        color: #aaa;
+        font-size: 14px;
+    } */
+</style>
+<div class="container">
+    <div class="main-notification-container pt-3 px-2">
+        <div class="notify-header">
+            <h1>Notifications</h1>
+            <button class="main-mark-read">Mark all as read</button>
+        </div>
+        <div class="notifications-group">
+
+            {% if notifications %}
+            {% for notification in notifications %}
+            {% if not notification.read %}
+            <div class="notification unread" id="{{ notification.id }}">
+                <a href="{% url 'bookings' notification.rental_id %}">
+                    <div class="time" data-time="{{ notification.created_at|date:" c" }}"></div>
+                    <div class="content">{{notification.message}}</div>
+                </a>
+            </div>
+            {% else%}
+            <div class="notification" id="{{ notification.id }}">
+                <a href="{% url 'booking-detail' notification.rental_id %}">
+                    <div class="time" data-time="{{ notification.created_at|date:" c" }}"></div>
+                    <div class="content">{{notification.message}}</div>
+                </a>
+            </div>
+            {% endif %}
+
+            {% endfor %}
+
+            {% else %}
+            <p>Currently No notifications.</p>
+
+            {% endif %}
+
+        </div>
+        <div class="footer">
+            {% if is_paginated %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+
+            <!-- <button class="see-all">See All</button> -->
+        </div>
+    </div>
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const timeElements = document.querySelectorAll('.time');
+        timeElements.forEach(function (element) {
+            const time = element.getAttribute('data-time');
+            element.innerText = "Rental • " + moment(time).fromNow();
+        });
+
+        console.log(getCookie('csrftoken'))
+        const csrf_token = getCookie('csrftoken')
+
+        var container = document.querySelector('.notifications-group');
+
+        container.onclick = function (event) {
+            var target = event.target;
+
+            // Check if the clicked element is within a notification item
+            while (target && !target.classList.contains('notification')) {
+                target = target.parentNode;
+            }
+
+            if (target && target.classList.contains('notification')) {
+                // Prevent the default anchor click behavior
+                event.preventDefault();
+
+                // Get the anchor element within the notification item
+                var anchor = target.querySelector('a');
+
+                // Fetch API to mark the notification as read
+                fetch('/api/v1/notifications/mark_read/', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrftoken // Include the CSRF token in the request header
+                    },
+                    body: JSON.stringify({ ids: [target.id] })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = anchor.href;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error marking notification as read:', error);
+                    });
+            }
+        };
+
+        document.querySelector('.main-mark-read').onclick = function (e) {
+            console.log('clickdddd')
+            fetch("/api/v1/notifications/mark_all_read/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrftoken
+                },
+                body: JSON.stringify({})
+
+
+            })
+        }
+    });
+
+
+
+</script>
+{% endblock %}

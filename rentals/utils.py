@@ -4,9 +4,9 @@ from channels.layers import get_channel_layer
 from .models import Notification
 
 
-def create_rental_notification(to_user, message):
+def create_rental_notification(to_user, message, rental_id):
     """Creates Notification."""
-    Notification.objects.create(user=to_user, message=message)
+    Notification.objects.create(user=to_user, message=message, rental_id=rental_id)
 
 
 def send_notification_count(to_user):
