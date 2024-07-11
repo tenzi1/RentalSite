@@ -231,8 +231,11 @@ def book_rental(request, rental_id):
                         to_user=owner, message=message, rental_id=rental_id
                     )
                     send_notification_count(to_user=owner)
+                else:
+                    return render(request, "booking_form.html", {"form": form})
 
         except Exception as e:
+            print("Exception raised", e)
             raise PermissionDenied(f"Failed to book rental: {str(e)}")
 
         return HttpResponseRedirect(reverse("home"))
