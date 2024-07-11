@@ -74,7 +74,6 @@ async function get_rent_range() {
 
 async function renderRentRange() {
     const rentRange = await get_rent_range();
-    console.log('inside renderrange', renderRentRange)
     var minPriceInput = document.querySelector(".input-min");
     var maxPriceInput = document.querySelector(".input-max");
     minPriceInput.value = rentRange.min_rent;
@@ -140,8 +139,6 @@ let totalCount = 0;
 let currentCount = 0;
 
 async function fetchRentals(page = 1) {
-
-    console.log("page number inside of FETCHRENTALS", page)
     queryParams = getSearchQuery();
     filterParams = getFilterQuery();
 
@@ -155,7 +152,6 @@ async function fetchRentals(page = 1) {
 }
 
 async function renderRental(event) {
-    console.log('inside render rental.......');
     event.preventDefault();
     const container = document.querySelector('.main-body');
     container.innerHTML = '';
@@ -164,7 +160,6 @@ async function renderRental(event) {
     currentCount = 0;
     nextPageExist = true;
     isLoading = false;
-    console.log("current page in render rental", currentPage)
     await loadRentals(currentPage, container);
 }
 
@@ -173,7 +168,6 @@ async function loadRentals(page, container) {
     isLoading = true;
 
     const data = await fetchRentals(page);
-    console.log("fetching page", page, data)
     if (!data) {
         console.log("no data");
         isLoading = false;
@@ -182,7 +176,6 @@ async function loadRentals(page, container) {
 
     nextPageExist = data.next ? true : false;
 
-    console.log("inside of loadrentals current page", page)
     // Update rental count and current page
     totalCount = data.count;
     currentCount += data.results.length;
@@ -207,7 +200,7 @@ async function loadRentals(page, container) {
             img.src = rental.images[0];
         }
         img.className = 'img-fluid rounded-start';
-        img.alt = '...'; // Replace... with your alt text
+        img.alt = '...';
 
         // Append the image to the left column
         colLeft.appendChild(img);
@@ -303,8 +296,6 @@ const container = document.querySelector('.main-body');
 container.addEventListener('scroll', async () => {
     if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
         currentPage++;
-
-        console.log("BEFORE calling loadrental from scroll event", currentPage)
         await loadRentals(currentPage, container);
     }
 });
@@ -315,8 +306,6 @@ elements.forEach(element => {
     element.addEventListener('click', async (event) => {
         elements.forEach(el => el.classList.remove('active'));
         element.classList.add('active');
-        console.log("before calling render renatl current page", currentPage)
-        console.log("=================================================")
         await renderRental(event); // Ensure renderRental is called on click and waits for completion
     });
 });

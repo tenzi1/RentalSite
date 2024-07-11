@@ -6,17 +6,14 @@ const notifySocket = new WebSocket(
 );
 
 notifySocket.onopen = function (e) {
-    console.log('Socket successfully connected.')
+    // console.log('Socket successfully connected.')
 }
 
 notifySocket.onclose = function (e) {
-    console.log('Socket closed unexpectedly')
+    // console.log('Socket closed unexpectedly')
 }
 
 notifySocket.onmessage = function (e) {
-    console.log(
-        'onmessage'
-    )
     const data = JSON.parse(e.data);
     const count = data.count;
     setCount(count);

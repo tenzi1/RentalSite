@@ -1,6 +1,3 @@
-console.log('inside of chat js')
-
-
 chatSocket = new WebSocket(
     "ws://"
     + document.location.host
@@ -8,11 +5,11 @@ chatSocket = new WebSocket(
 )
 
 chatSocket.onopen = function (e) {
-    console.log("Chat Socket successfully connected.")
+    // console.log("Chat Socket successfully connected.")
 }
 
 chatSocket.onclose = function (e) {
-    console.log("Chat socket closed unexpectedly.")
+    // console.log("Chat socket closed unexpectedly.")
 }
 
 chatSocket.onmessage = async function (e) {
