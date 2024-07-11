@@ -19,37 +19,6 @@ function showCheckboxes() {
     }
 }
 
-const elements = document.querySelectorAll('.header-child');
-
-elements.forEach(element => {
-
-    element.addEventListener('click', () => {
-        elements.forEach(el => el.classList.remove('active'));
-        element.classList.toggle('active');
-    });
-    element.addEventListener('click', renderRental)
-});
-
-
-// // toggle active class
-// const firstElement = document.querySelector('.featured-rental');
-// const secondElement = document.querySelector('.latest-rental');
-
-
-// function toggleActiveClass() {
-//     firstElement.classList.remove('active');
-//     secondElement.classList.remove('active');
-//     if (this == firstElement) {
-//         firstElement.classList.add('active');
-//     } else {
-//         secondElement.classList.add('active')
-//     }
-// }
-// firstElement.addEventListener('click', toggleActiveClass);
-// secondElement.addEventListener('click', toggleActiveClass);
-// firstElement.addEventListener('click', renderRental)
-// secondElement.addEventListener('click', renderRental)
-
 
 // Fetch Categories
 async function fetchCategories() {
@@ -105,6 +74,7 @@ async function get_rent_range() {
 
 async function renderRentRange() {
     const rentRange = await get_rent_range();
+    console.log('inside renderrange', renderRentRange)
     var minPriceInput = document.querySelector(".input-min");
     var maxPriceInput = document.querySelector(".input-max");
     minPriceInput.value = rentRange.min_rent;
@@ -163,16 +133,20 @@ function getFilterQuery() {
     return filterParams
 }
 
+let nextPageExist = true;
+let currentPage
+let isLoading = false;
+let totalCount = 0;
+let currentCount = 0;
 
-//////////
-async function fetchRentals(event) {
-    event.preventDefault()
+async function fetchRentals(page = 1) {
 
-    queryParams = getSearchQuery()
-    filterParams = getFilterQuery()
+    console.log("page number inside of FETCHRENTALS", page)
+    queryParams = getSearchQuery();
+    filterParams = getFilterQuery();
 
     try {
-        const response = await fetch(`/api/v1/rental?${queryParams}&${filterParams}`);
+        const response = await fetch(`/api/v1/rental?page=${page}&${queryParams}&${filterParams}`);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -180,21 +154,44 @@ async function fetchRentals(event) {
     }
 }
 
-// Function to render data
-
 async function renderRental(event) {
-
+    console.log('inside render rental.......');
+    event.preventDefault();
     const container = document.querySelector('.main-body');
     container.innerHTML = '';
-    const data = await fetchRentals(event);
+    currentPage = 1; // Reset to the first page
+    totalCount = 0;
+    currentCount = 0;
+    nextPageExist = true;
+    isLoading = false;
+    console.log("current page in render rental", currentPage)
+    await loadRentals(currentPage, container);
+}
+
+async function loadRentals(page, container) {
+    if (isLoading || !nextPageExist) return;
+    isLoading = true;
+
+    const data = await fetchRentals(page);
+    console.log("fetching page", page, data)
     if (!data) {
+        console.log("no data");
+        isLoading = false;
         return;
     }
-    data['results'].forEach(rental => {
-        // Create the outermost div
+
+    nextPageExist = data.next ? true : false;
+
+    console.log("inside of loadrentals current page", page)
+    // Update rental count and current page
+    totalCount = data.count;
+    currentCount += data.results.length;
+    document.getElementById('rental-count').textContent = `${currentCount} of ${totalCount} Rentals`;
+
+    data.results.forEach(rental => {
+        // Create rental card and append to container (same code as before)
         const cardDiv = document.createElement('div');
         cardDiv.className = 'card mb-3';
-        // cardDiv.style.maxWidth = '540px';
 
         // Create the row div
         const rowDiv = document.createElement('div');
@@ -223,7 +220,7 @@ async function renderRental(event) {
         const cardBodyDiv = document.createElement('div');
         cardBodyDiv.className = 'card-body';
 
-        // Create the card title h5
+        // Create the card title h4
         const cardTitle = document.createElement('h4');
         cardTitle.className = 'card-title';
         cardTitle.textContent = rental.title;
@@ -236,6 +233,7 @@ async function renderRental(event) {
         const cardText2 = document.createElement('p');
         cardText2.className = 'card-text';
         cardText2.innerHTML = `<b>Location</b> : ${rental.address.split(',').slice(0, 2)}`;
+
         // Create the second card text p
         const cardText3 = document.createElement('p');
         cardText3.className = 'card-text';
@@ -252,46 +250,35 @@ async function renderRental(event) {
         cardText4.innerHTML = `<b>Rental Price</b> :  Rs. ${rental.monthly_rent}`;
 
         const anchor = document.createElement('a');
-        anchor.className = 'btn btn-dark me-1'
-        anchor.innerHTML = 'View'
-        anchor.href = `/rental_detail/${rental.id}/`
+        anchor.className = 'btn btn-dark me-1';
+        anchor.innerHTML = 'View';
+        anchor.href = `/rental_detail/${rental.id}/`;
 
         // Append the card title and texts to the card body
         cardBodyDiv.appendChild(cardTitle);
         cardBodyDiv.appendChild(cardText1);
         cardBodyDiv.appendChild(cardText2);
         cardBodyDiv.appendChild(cardText4);
-        // if (rental.status) {
-        //     cardText5 = document.createElement('p');
-        //     cardText5.className = 'card-text';
-        //     cardText5.innerHTML = `<b>Booking Status</b> : <strong class="badge bg-dark">${rental.status}</strong>`
-        //     cardBodyDiv.appendChild(cardText5)
-        // }
         cardBodyDiv.appendChild(cardText3);
+        cardBodyDiv.appendChild(anchor);
 
-        cardBodyDiv.appendChild(anchor)
-        // cardBodyDiv.appendChild(anchor2)
-
-        const headerChild = document.querySelector('.main-header .active')
+        const headerChild = document.querySelector('.main-header .active');
         if (headerChild.classList.contains('featured-rental')) {
             // filterData['featured'] = true
         } else if (headerChild.classList.contains('owned-rental')) {
             const anchor2 = document.createElement('a');
-            anchor2.className = 'btn btn-dark'
-            anchor2.textContent = 'Bookings'
-            anchor2.href = `/bookings/${rental.id}/`
-
-            cardBodyDiv.appendChild(anchor2)
-
+            anchor2.className = 'btn btn-dark';
+            anchor2.textContent = 'Bookings';
+            anchor2.href = `/bookings/${rental.id}/`;
+            cardBodyDiv.appendChild(anchor2);
         } else if (headerChild.classList.contains('favorite')) {
             // filterData['favorite'] = true
         } else if (headerChild.classList.contains('booked-rental')) {
             const anchor2 = document.createElement('a');
-            anchor2.className = 'btn btn-dark'
-            anchor2.textContent = 'Bookings'
-            anchor2.href = `/booking/${rental.id}/`
-
-            cardBodyDiv.appendChild(anchor2)
+            anchor2.className = 'btn btn-dark';
+            anchor2.textContent = 'Bookings';
+            anchor2.href = `/booking/${rental.id}/`;
+            cardBodyDiv.appendChild(anchor2);
         }
 
         // Append the card body to the right column
@@ -305,85 +292,44 @@ async function renderRental(event) {
         cardDiv.appendChild(rowDiv);
 
         // Finally, append the card to the body of the document
-        const container = document.querySelector('.main-body');
-
         container.appendChild(cardDiv);
+    });
 
-    })
+    isLoading = false;
+    currentPage = page;
 }
-// async function renderRental(event) {
 
-//     const container = document.querySelector('.main-body');
-//     container.innerHTML = '';
-//     const data = await fetchRentals(event);
-//     if (!data) {
-//         return;
-//     }
-//     data['results'].forEach(rental => {
-//         const card = document.createElement('div');
-//         card.classList.add('rental-card');
+const container = document.querySelector('.main-body');
+container.addEventListener('scroll', async () => {
+    if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+        currentPage++;
 
-//         const images = document.createElement('div')
-//         images.classList.add('main-image')
+        console.log("BEFORE calling loadrental from scroll event", currentPage)
+        await loadRentals(currentPage, container);
+    }
+});
 
-//         if (rental.images.length > 1) {
-//             images.innerHTML = `<img src="${rental.images[0]}" class="rental-img">`
+const elements = document.querySelectorAll('.header-child');
 
-//             const thumbnail = document.createElement('div')
-//             thumbnail.classList.add('thumbnails')
-//             for (let i = 1; i < rental.images.length; i++) {
+elements.forEach(element => {
+    element.addEventListener('click', async (event) => {
+        elements.forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        console.log("before calling render renatl current page", currentPage)
+        console.log("=================================================")
+        await renderRental(event); // Ensure renderRental is called on click and waits for completion
+    });
+});
 
-//                 // img = document.createElement('img')
-//                 thumbnail.innerHTML += `<img src="${rental.images[i]}" alt="Thumbnail">`;
-
-//             }
-
-//             images.appendChild(thumbnail)
-//         } else if (rental.images.length == 1) {
-//             images.innerHTML = `<img src="${rental.images[0]}" class="rental-img">`
-
-//         } else {
-//             images.innerHTML = `<img src="#" class="rental-img" style="width:257px">`
-
-//         }
-
-//         const wrapper = document.createElement('div')
-//         wrapper.classList.add('description-section')
-
-//         const title = document.createElement('h3');
-//         title.textContent = rental.title;
-
-//         const body = document.createElement('p');
-//         body.textContent = rental.description;
-
-//         const address = document.createElement('p')
-//         address.textContent = rental.address
-
-//         const rent = document.createElement('p')
-//         rent.textContent = `Rs. ${rental.monthly_rent}`
-
-//         const owner = document.createElement('h6')
-//         owner.textContent = rental.owner
-
-//         wrapper.appendChild(title);
-//         wrapper.appendChild(body);
-//         wrapper.appendChild(address);
-//         wrapper.appendChild(rent)
-//         wrapper.appendChild(owner);
-//         card.appendChild(images)
-//         card.appendChild(wrapper);
-//         container.appendChild(card);
-//     })
-// }
 
 document.getElementById('search-form').addEventListener('submit', renderRental)
 document.querySelector('.search-icon').addEventListener('click', renderRental)
 document.getElementById('filter-form').addEventListener('submit', renderRental)
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    renderCategories();
-    renderRentRange();
-    renderRental(event);
+document.addEventListener('DOMContentLoaded', async (event) => {
+    await renderCategories();
+    await renderRentRange();
+    await renderRental(event);
 
 
 });
