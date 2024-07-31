@@ -1,10 +1,7 @@
 import json
 import traceback
-from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from datetime import datetime
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from .models import Notification
@@ -12,8 +9,6 @@ from .redis_utils import get_redis_client
 
 # initializing redis client
 redis_client = get_redis_client()
-
-User = get_user_model()
 
 
 def generate_group_name(senderId, receiver_id):
