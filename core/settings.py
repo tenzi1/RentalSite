@@ -14,9 +14,6 @@ import os
 import redis
 from pathlib import Path
 
-# Load environment variables from .env file
-# load_dotenv(".env")
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -271,12 +268,8 @@ CHANNEL_LAYERS = {
             "hosts": [
                 (REDIS_HOST, REDIS_PORT),
             ]
-            # ("127.0.0.1", 6379)],
         },
     },
 }
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels.layers.InMemoryChannelLayer",
-#     }
-# }
+
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", [])
