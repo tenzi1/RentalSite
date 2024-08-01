@@ -77,3 +77,4 @@ wcwidth==0.2.13
 zope.interface==6.4.post2
 whitenoise==6.4.0
 psycopg2-binary==2.9.9 
+django-cors-headers
