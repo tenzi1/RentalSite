@@ -1,5 +1,5 @@
 chatSocket = new WebSocket(
-    "ws://"
+    "wss://"
     + document.location.host
     + "/ws/chat/"
 )
