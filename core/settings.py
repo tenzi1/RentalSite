@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.facebook",
     "django_filters",
+    "corsheaders",
     "crispy_forms",
     "crispy_bootstrap4",
     "crispy_bootstrap5",
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -273,3 +275,5 @@ CHANNEL_LAYERS = {
 }
 
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
+
+CORS_ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS").split(" ")
