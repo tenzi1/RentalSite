@@ -1,1 +1,1 @@
-web: celery -A core worker --loglevel=info & python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application
+web: celery -A core worker --loglevel=info & celery -A core beat --loglevel=info & python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application
