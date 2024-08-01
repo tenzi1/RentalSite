@@ -1,0 +1,1 @@
+web: celery -A core worker --loglevel=info & python manage.py migrate && daphne core.asgi  --bind 0.0.0.0:8000
