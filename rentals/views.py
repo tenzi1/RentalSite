@@ -230,7 +230,7 @@ def book_rental(request, rental_id):
                     create_rental_notification(
                         to_user=owner, message=message, rental_id=rental_id
                     )
-                    send_notification_count(to_user=owner)
+                    # send_notification_count(to_user=owner)
                 else:
                     return render(request, "booking_form.html", {"form": form})
 
@@ -257,7 +257,7 @@ def cancel_booking(request, rental_id):
             create_rental_notification(
                 to_user=booking.rental.owner.user, message=message, rental_id=rental_id
             )
-            send_notification_count(to_user=booking.rental.owner.user)
+            # send_notification_count(to_user=booking.rental.owner.user)
         return HttpResponseRedirect(reverse("home"))
     raise PermissionDenied("Invalid request method.")
 
@@ -285,7 +285,7 @@ def update_booking(request, rental_id):
             create_rental_notification(
                 to_user=owner, message=message, rental_id=rental_id
             )
-            send_notification_count(to_user=owner)
+            # send_notification_count(to_user=owner)
             return HttpResponseRedirect(reverse("home"))
     else:
         raise PermissionDenied("Invalid request method.")
@@ -322,23 +322,23 @@ class BookingDetailView(LoginRequiredMixin, generic.DetailView):
     context_object_name = "booking"
 
     def get_object(self):
+        rental_id = self.kwargs.get("rental_id")
+        user = self.request.user
+
+        query = Q(rental_id=rental_id) & (Q(user=user) | Q(rental__owner__user=user))
+
+        booking = Booking.objects.filter(query).select_related("user", "rental").first()
+        if booking is None:
+            raise Booking.DoesNotExist
+        return booking
+    
+    def get(self, request, *args, **kwargs):
         try:
-            rental_id = self.kwargs["rental_id"]
-            user = self.request.user
-
-            query = Q(rental_id=rental_id) & (
-                Q(user=user) | Q(rental__owner__user=user)
-            )
-
-            booking = (
-                Booking.objects.filter(query).select_related("user", "rental").first()
-            )
-            if booking is None:
-                raise Booking.DoesNotExist
-
-            return booking
+            self.object = self.get_object()
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
         except Booking.DoesNotExist:
-            return HttpResponse("Booking Not found for given rental", 400)
+            return render(self.request, "404.html", status=404)
 
 
 @login_required
@@ -371,7 +371,7 @@ def confirm_booking(request):
                     message=confirm_message,
                     rental_id=booking.rental.id,
                 )
-                send_notification_count(to_user=booking.user)
+                # send_notification_count(to_user=booking.user)
 
                 rejected_bookings = booking.rental.booking_set.exclude(id=booking_id)
                 rejected_bookings.update(status="REJECTED")
@@ -383,7 +383,7 @@ def confirm_booking(request):
                         message=reject_message,
                         rental_id=booking.rental_id,
                     )
-                    send_notification_count(to_user=rejected_booking.user)
+                    # send_notification_count(to_user=rejected_booking.user)
 
         except Exception as e:
             raise PermissionDenied(f"Failed to update booking status: {str(e)}")
@@ -424,7 +424,7 @@ def reject_booking(request):
                 create_rental_notification(
                     to_user=booking.user, message=message, rental_id=booking.rental.id
                 )
-                send_notification_count(to_user=booking.user)
+                # send_notification_count(to_user=booking.user)
 
         except Exception as e:
             raise PermissionDenied(f"Failed to reject booking: {str(e)}")
